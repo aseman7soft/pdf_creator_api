@@ -1,0 +1,27 @@
+# =============================================================================
+# systemd timer — PDF Service Scheduler
+# =============================================================================
+#
+# هر دقیقه (دقیقاً مثل cron `* * * * * php artisan schedule:run`).
+# نصب:
+#   sudo systemctl enable --now pdf-scheduler.timer
+#   sudo systemctl list-timers pdf-scheduler.timer
+#
+# مشاهدهٔ اجراها:
+#   sudo journalctl -u pdf-scheduler.service --since today
+# =============================================================================
+
+[Unit]
+Description=Run Laravel scheduler every minute for pdf.as7th.com
+Documentation=file:///var/www/pdf-service/docs/OPERATIONS.md
+
+[Timer]
+# هر دقیقه، در ثانیهٔ 0
+OnCalendar=*-*-* *:*:00
+# اگر سرور در زمان اجرا خاموش بود، پس از بوت یک‌بار اجرا شود
+Persistent=true
+AccuracySec=1s
+Unit=pdf-scheduler.service
+
+[Install]
+WantedBy=timers.target

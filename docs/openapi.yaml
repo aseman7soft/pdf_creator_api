@@ -1,0 +1,1222 @@
+openapi: 3.0.3
+
+info:
+  title: Central Document & PDF Generation Service API
+  description: |
+    سرویس مرکزی تولید اسناد و PDF — API نسخه ۱.
+
+    Central Document & PDF Generation Service — version 1 API.
+
+    ## احراز هویت / Authentication
+    همه‌ی مسیرهای محافظت‌شده با هدر زیر احراز هویت می‌شوند:
+
+    ```
+    Authorization: Bearer <API_KEY>
+    ```
+
+    ## قالب پاسخ موفق / Success envelope
+    ```json
+    {"success": true, "data": {}, "meta": {}, "request_id": "..."}
+    ```
+
+    ## قالب خطا / Error envelope
+    ```json
+    {"success": false, "error": {"code": "INVALID_API_KEY", "message": "...", "details": {}}, "request_id": "..."}
+    ```
+
+    همه‌ی پاسخ‌ها هدر `X-Request-Id` دارند؛ همین مقدار برای پیگیری در پشتیبانی استفاده می‌شود.
+  version: "1.0.0"
+  contact:
+    name: AS7TH Support
+    email: support@as7th.com
+
+servers:
+  - url: /api/v1
+    description: "همان سرور / Same host (production: https://pdf.as7th.com/api/v1)"
+
+tags:
+  - name: Health
+    description: وضعیت سرویس (عمومی)
+  - name: Templates
+    description: قالب‌های مجاز پروژه
+  - name: Documents
+    description: تولید، وضعیت و دانلود اسناد
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: وضعیت سرویس / Service health
+      security: []
+      description: |
+        بدون احراز هویت. وضعیت پایگاه داده و موتور Gotenberg را برمی‌گرداند.
+        پاسخ حدود ۶۰ ثانیه کش می‌شود. مقدار `status` می‌تواند `ok` یا `degraded` باشد.
+      responses:
+        "200":
+          description: وضعیت سرویس
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthEnvelope"
+              examples:
+                ok:
+                  value:
+                    success: true
+                    data:
+                      status: ok
+                      service: pdf-service
+                      version: v1
+                      timestamp: "2026-01-01T10:00:00+03:30"
+                      checks:
+                        database: ok
+                        gotenberg: ok
+                    meta: {}
+                    request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+                degraded:
+                  value:
+                    success: true
+                    data:
+                      status: degraded
+                      service: pdf-service
+                      version: v1
+                      timestamp: "2026-01-01T10:00:00+03:30"
+                      checks:
+                        database: ok
+                        gotenberg: unavailable
+                    meta: {}
+                    request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+
+  /docs:
+    get:
+      tags: [Health]
+      summary: صفحه Swagger UI
+      security: []
+      description: صفحه تعاملی مستندات (HTML). بدون احراز هویت.
+      responses:
+        "200":
+          description: صفحه HTML مستندات
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /templates:
+    get:
+      tags: [Templates]
+      summary: لیست قالب‌های مجاز پروژه / List accessible templates
+      description: |
+        فقط قالب‌های فعال و مجاز برای پروژه‌ی کلید API بازگردانده می‌شوند.
+        اگر پروژه محدودیت قالب نداشته باشد، همه‌ی قالب‌های فعال قابل استفاده‌اند.
+      parameters:
+        - name: search
+          in: query
+          description: جستجو در نام، slug، دسته‌بندی و توضیحات
+          schema:
+            type: string
+            maxLength: 100
+        - name: category
+          in: query
+          description: فیلتر دسته‌بندی
+          schema:
+            type: string
+            maxLength: 60
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: لیست قالب‌ها
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data, meta]
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Template"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+                  request_id:
+                    type: string
+                    format: uuid
+              examples:
+                persian:
+                  value:
+                    success: true
+                    data:
+                      - slug: hotel-voucher
+                        name: واچر هتل
+                        category: hotel
+                        description: واچر رزرو هتل با پشتیبانی کامل از فارسی و راست‌چین.
+                        locale: fa
+                        version: 1
+                        page_size: A4
+                        orientation: portrait
+                        margins:
+                          top: 22
+                          right: 10
+                          bottom: 18
+                          left: 10
+                        variables:
+                          - name: guest_name
+                            label: نام مهمان
+                            type: string
+                            required: true
+                            default: null
+                            description: null
+                            validation:
+                              rules: max:120
+                              min_length: null
+                              max_length: null
+                              min_value: null
+                              max_value: null
+                        updated_at: "2026-01-01T10:00:00+03:30"
+                english:
+                  value:
+                    success: true
+                    data:
+                      - slug: invoice-standard
+                        name: Standard Invoice
+                        category: finance
+                        description: English sales invoice with dynamic line items.
+                        locale: en
+                        version: 3
+                        page_size: A4
+                        orientation: portrait
+                        margins:
+                          top: 12
+                          right: 12
+                          bottom: 16
+                          left: 12
+                        variables:
+                          - name: invoice_number
+                            label: Invoice number
+                            type: string
+                            required: true
+                            default: null
+                            description: null
+                            validation:
+                              rules: null
+                              min_length: null
+                              max_length: null
+                              min_value: null
+                              max_value: null
+                        updated_at: "2026-01-01T10:00:00+03:30"
+                    meta:
+                      current_page: 1
+                      per_page: 20
+                      total: 1
+                      last_page: 1
+                    request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /templates/{slug}:
+    get:
+      tags: [Templates]
+      summary: جزئیات قالب مجاز / Template detail
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: hotel-voucher
+      responses:
+        "200":
+          description: جزئیات قالب همراه با داده نمونه (از مقادیر پیش‌فرض متغیرها)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/TemplateDetail"
+                  meta:
+                    type: object
+                    example: {}
+                  request_id:
+                    type: string
+                    format: uuid
+              examples:
+                persian:
+                  value:
+                    success: true
+                    data:
+                      slug: hotel-voucher
+                      name: واچر هتل
+                      category: hotel
+                      description: واچر رزرو هتل با پشتیبانی کامل از فارسی.
+                      locale: fa
+                      version: 1
+                      page_size: A4
+                      orientation: portrait
+                      margins:
+                        top: 22
+                        right: 10
+                        bottom: 18
+                        left: 10
+                      variables:
+                        - name: guest_name
+                          label: نام مهمان
+                          type: string
+                          required: true
+                          default: null
+                          description: null
+                          validation:
+                            rules: max:120
+                            min_length: null
+                            max_length: null
+                            min_value: null
+                            max_value: null
+                        - name: room_count
+                          label: تعداد اتاق
+                          type: integer
+                          required: true
+                          default: 1
+                          description: null
+                          validation:
+                            rules: null
+                            min_length: null
+                            max_length: null
+                            min_value: 1
+                            max_value: 20
+                      sample_data:
+                        guest_name: null
+                        room_count: 1
+                      updated_at: "2026-01-01T10:00:00+03:30"
+                    meta: {}
+                    request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: پروژه به این قالب دسترسی ندارد (TEMPLATE_NOT_ALLOWED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: قالب یافت نشد (TEMPLATE_NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "422":
+          description: قالب غیرفعال است (TEMPLATE_INACTIVE)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /documents/generate:
+    post:
+      tags: [Documents]
+      summary: تولید هم‌زمان PDF / Generate PDF (sync)
+      description: |
+        سند را هم‌زمان تولید و فایل `application/pdf` را به صورت attachment برمی‌گرداند.
+        برای ارسال دوباره‌ی مطمئن (retry-safe) می‌توانید هدر `Idempotency-Key` بفرستید؛
+        ارسال مجدد با همان کلید و همان بدنه، همان فایل PDF را برمی‌گرداند
+        (هدر `X-Idempotent-Replay: true`).
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateRequest"
+            examples:
+              persianHotelVoucher:
+                summary: واچر هتل (فارسی)
+                value:
+                  template: hotel-voucher
+                  reference: "BOOKING-1402-0091"
+                  data:
+                    guest_name: علی رضایی
+                    hotel_name: هتل پارسیان
+                    booking_reference: "HZ-99231"
+                    check_in: "2026-02-01"
+                    check_out: "2026-02-05"
+                    room_count: 2
+                    total_price: 48500000
+                    currency: IRR
+                    guests:
+                      - name: علی رضایی
+                        passport: "P1234567"
+                      - name: مریم رضایی
+                        passport: "P7654321"
+                    notes: لطفاً اتاق‌های غیرسیگاری رزرو شود.
+                  options:
+                    format: A4
+                    orientation: portrait
+              englishInvoice:
+                summary: Invoice (English)
+                value:
+                  template: invoice-standard
+                  reference: "INV-2026-0001"
+                  data:
+                    invoice_number: "INV-2026-0001"
+                    issue_date: "2026-01-01"
+                    due_date: "2026-01-31"
+                    customer_name: Acme Ltd.
+                    customer_address: "42 Baker Street, London"
+                    customer_email: billing@acme.test
+                    items:
+                      - description: Consulting services
+                        quantity: 2
+                        unit_price: 500
+                        amount: 1000
+                      - description: Support plan
+                        quantity: 1
+                        unit_price: 250
+                        amount: 250
+                    subtotal: 1250
+                    discount: 50
+                    tax_rate: 9
+                    tax: 108
+                    total: 1308
+                    currency: USD
+                    status: PAID
+                    notes: Thank you for your business.
+                  options:
+                    format: A4
+                    orientation: portrait
+      responses:
+        "200":
+          description: فایل PDF تولیدشده
+          headers:
+            Content-Disposition:
+              description: attachment; filename="..."
+              schema:
+                type: string
+            X-Document-Id:
+              description: شناسه عمومی سند (ULID)
+              schema:
+                type: string
+                example: "01JABCDEFGHJKMNPQRSTVWXYZ0"
+            X-Generation-Time-Ms:
+              description: زمان تولید فایل (میلی‌ثانیه)
+              schema:
+                type: integer
+                example: 1240
+            X-Request-Id:
+              description: شناسه پیگیری درخواست
+              schema:
+                type: string
+                format: uuid
+            X-Idempotent-Replay:
+              description: فقط زمانی که پاسخ از Idempotency replay آمده باشد
+              schema:
+                type: string
+                enum: ["true"]
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              schema:
+                type: integer
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: دسترسی به قالب مجاز نیست (TEMPLATE_NOT_ALLOWED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: قالب یافت نشد (TEMPLATE_NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "413":
+          description: حجم بدنه درخواست بیش از حد مجاز (PAYLOAD_TOO_LARGE)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "422":
+          description: خطای اعتبارسنجی یا استفاده‌ی مجدد کلید Idempotency (VALIDATION_ERROR / IDEMPOTENCY_KEY_REUSED / TEMPLATE_INACTIVE)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+              examples:
+                validationError:
+                  value:
+                    success: false
+                    error:
+                      code: VALIDATION_ERROR
+                      message: داده‌های ارسالی نامعتبر است.
+                      details:
+                        data.guest_name:
+                          - فیلد guest_name الزامی است.
+                    request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+                idempotencyKeyReused:
+                  value:
+                    success: false
+                    error:
+                      code: IDEMPOTENCY_KEY_REUSED
+                      message: این کلید Idempotency قبلاً با بدنه درخواست متفاوتی استفاده شده است.
+                      details: {}
+                    request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "502":
+          description: پاسخ نامعتبر از موتور PDF (GOTENBERG_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "503":
+          description: موتور PDF در دسترس نیست (GOTENBERG_UNAVAILABLE / GOTENBERG_TIMEOUT)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /documents/queue:
+    post:
+      tags: [Documents]
+      summary: تولید غیرهم‌زمان / Queue generation
+      description: |
+        درخواست را در صف قرار می‌دهد و بلافاصله پاسخ `202` با شناسه‌ی سند برمی‌گرداند.
+        سپس با `status_url` وضعیت را بخوانید و در صورت `completed` از `download_url`
+        (لینک امضاشده) فایل را دانلود کنید.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateRequest"
+            examples:
+              persianMultiPage:
+                summary: برنامه سفر چندصفحه‌ای
+                value:
+                  template: tour-itinerary
+                  reference: "TOUR-1402-118"
+                  data:
+                    tour_name: تور شمال
+                    tour_code: "NORTH-5D"
+                    start_date: "2026-03-20"
+                    end_date: "2026-03-25"
+                    traveler_count: 4
+                    duration_days: 5
+                    destination: مازندران
+                    days:
+                      - day_number: 1
+                        title: حرکت به سمت شمال
+                        description: حرکت از تهران و توقف در چالوس.
+                        meals: ناهار، شام
+                        hotel: هتل پارسیان چالوس
+                    includes: [اقامت, صبحانه, راهنما]
+                    excludes: [ناهار, بیمه]
+                    terms: لغو رزرو تا ۴۸ ساعت قبل بدون جریمه.
+                  options:
+                    format: A4
+                    orientation: portrait
+      responses:
+        "202":
+          description: سند در صف تولید قرار گرفت
+          headers:
+            X-Idempotent-Replay:
+              description: فقط در صورت replay با همان Idempotency-Key
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/QueueResponse"
+              examples:
+                queued:
+                  value:
+                    success: true
+                    data:
+                      id: "01JABCDEFGHJKMNPQRSTVWXYZ0"
+                      status: pending
+                      status_url: "https://pdf.as7th.com/api/v1/documents/01JABCDEFGHJKMNPQRSTVWXYZ0/status"
+                      download_url: "https://pdf.as7th.com/api/v1/documents/01JABCDEFGHJKMNPQRSTVWXYZ0/download/signed?expires=1767225600&signature=..."
+                      created_at: "2026-01-01T10:00:00+03:30"
+                    meta: {}
+                    request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: دسترسی به قالب مجاز نیست (TEMPLATE_NOT_ALLOWED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: قالب یافت نشد (TEMPLATE_NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "413":
+          description: حجم بدنه درخواست بیش از حد مجاز (PAYLOAD_TOO_LARGE)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "422":
+          description: خطای اعتبارسنجی (VALIDATION_ERROR / IDEMPOTENCY_KEY_REUSED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /documents/{ulid}/status:
+    get:
+      tags: [Documents]
+      summary: وضعیت سند / Document status
+      description: فقط اسناد متعلق به پروژه‌ی کلید API قابل مشاهده‌اند.
+      parameters:
+        - $ref: "#/components/parameters/Ulid"
+      responses:
+        "200":
+          description: وضعیت سند
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/DocumentStatus"
+              examples:
+                completed:
+                  value:
+                    success: true
+                    data:
+                      id: "01JABCDEFGHJKMNPQRSTVWXYZ0"
+                      reference: "BOOKING-1402-0091"
+                      status: completed
+                      template:
+                        slug: hotel-voucher
+                        name: واچر هتل
+                        version: 1
+                      created_at: "2026-01-01T10:00:00+03:30"
+                      completed_at: "2026-01-01T10:00:02+03:30"
+                      expires_at: "2026-01-31T10:00:00+03:30"
+                      file_size: 184320
+                      download_url: "https://pdf.as7th.com/api/v1/documents/01JABCDEFGHJKMNPQRSTVWXYZ0/download/signed?expires=1767225600&signature=..."
+                      error: null
+                    meta: {}
+                    request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+                failed:
+                  value:
+                    success: true
+                    data:
+                      id: "01JABCDEFGHJKMNPQRSTVWXYZ0"
+                      reference: "BOOKING-1402-0091"
+                      status: failed
+                      template:
+                        slug: hotel-voucher
+                        name: واچر هتل
+                        version: 1
+                      created_at: "2026-01-01T10:00:00+03:30"
+                      completed_at: "2026-01-01T10:00:02+03:30"
+                      expires_at: null
+                      file_size: null
+                      download_url: null
+                      error:
+                        code: GOTENBERG_UNAVAILABLE
+                        message: سرویس تولید فایل PDF در حال حاضر در دسترس نیست.
+                    meta: {}
+                    request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: سند یافت نشد (DOCUMENT_NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /documents/{ulid}/download:
+    get:
+      tags: [Documents]
+      summary: دانلود سند با Bearer / Download with API key
+      description: |
+        فقط برای اسناد `completed` و غیرمنقضی متعلق به پروژه. فایل به صورت
+        `application/pdf` با `Content-Disposition: attachment` برگردانده می‌شود.
+      parameters:
+        - $ref: "#/components/parameters/Ulid"
+      responses:
+        "200":
+          description: فایل PDF
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+            X-Document-Id:
+              schema:
+                type: string
+            X-Generation-Time-Ms:
+              schema:
+                type: integer
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: سند یافت نشد (DOCUMENT_NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "409":
+          description: سند هنوز آماده نیست (DOCUMENT_NOT_READY)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "410":
+          description: اعتبار سند منقضی شده است (DOCUMENT_EXPIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /documents/{ulid}/download/signed:
+    get:
+      tags: [Documents]
+      summary: دانلود سند با لینک امضاشده / Download with signed URL
+      security: []
+      description: |
+        بدون نیاز به هدر Authorization؛ امضای موقت لینک (که در `download_url`
+        پاسخ queue/status آمده) اعتبارسنجی می‌شود. لینک منقضی یا دست‌کاری‌شده
+        با خطای `SIGNATURE_INVALID` رد می‌شود.
+      parameters:
+        - $ref: "#/components/parameters/Ulid"
+        - name: expires
+          in: query
+          required: true
+          description: زمان انقضای لینک (timestamp یونیکس، توسط سرور تولید می‌شود)
+          schema:
+            type: integer
+        - name: signature
+          in: query
+          required: true
+          description: امضای HMAC لینک (توسط سرور تولید می‌شود)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: فایل PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "403":
+          description: لینک نامعتبر یا منقضی (SIGNATURE_INVALID)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: سند یافت نشد (DOCUMENT_NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "409":
+          description: سند هنوز آماده نیست (DOCUMENT_NOT_READY)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "410":
+          description: اعتبار سند منقضی شده است (DOCUMENT_EXPIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        کلید API پروژه به شکل `pdfsvc_<random>` که فقط یک بار در زمان ساخت
+        نمایش داده می‌شود. نمونه: `Authorization: Bearer pdfsvc_xxx`.
+
+  parameters:
+    Ulid:
+      name: ulid
+      in: path
+      required: true
+      description: شناسه عمومی سند (ULID)
+      schema:
+        type: string
+        minLength: 26
+        maxLength: 26
+      example: "01JABCDEFGHJKMNPQRSTVWXYZ0"
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: |
+        کلید یکتای ارسال درخواست برای جلوگیری از تولید تکراری. ارسال دوباره با
+        همان کلید و همان بدنه، همان سند را برمی‌گرداند. استفاده‌ی مجدد همان کلید
+        با بدنه‌ی متفاوت خطای `IDEMPOTENCY_KEY_REUSED` می‌دهد.
+      schema:
+        type: string
+        maxLength: 120
+        pattern: "^[A-Za-z0-9._~:\\-]+$"
+      example: "8f2c1e6a-31b4-4c5d-9a77-2f0d1b7c9e10"
+
+  schemas:
+    SuccessEnvelope:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          description: داده پاسخ (شیء یا آرایه)
+        meta:
+          type: object
+          example: {}
+        request_id:
+          type: string
+          format: uuid
+          example: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: کد ماشین‌خوان خطا
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          description: پیام قابل نمایش برای مصرف‌کننده
+          example: داده‌های ارسالی نامعتبر است.
+        details:
+          type: object
+          additionalProperties: true
+          description: جزئیات اختیاری (مثلاً خطاهای اعتبارسنجی به تفکیک فیلد)
+          example: {}
+
+    ErrorEnvelope:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          $ref: "#/components/schemas/Error"
+        request_id:
+          type: string
+          format: uuid
+          example: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        per_page:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 3
+        last_page:
+          type: integer
+          example: 1
+
+    TemplateVariable:
+      type: object
+      required: [name, label, type, required]
+      properties:
+        name:
+          type: string
+          description: نام شناسه‌ای متغیر (کلید در data)
+          example: guest_name
+        label:
+          type: string
+          example: نام مهمان
+        type:
+          type: string
+          enum: [string, text, integer, decimal, boolean, date, datetime, image, url, array, object]
+          example: string
+        required:
+          type: boolean
+          example: true
+        default:
+          nullable: true
+          description: مقدار پیش‌فرض
+          example: null
+        description:
+          type: string
+          nullable: true
+          example: نام کامل مهمان
+        validation:
+          type: object
+          properties:
+            rules:
+              type: string
+              nullable: true
+              example: max:120
+            min_length:
+              type: integer
+              nullable: true
+            max_length:
+              type: integer
+              nullable: true
+            min_value:
+              type: number
+              nullable: true
+            max_value:
+              type: number
+              nullable: true
+
+    Template:
+      type: object
+      required: [slug, name, category, locale, version, variables]
+      properties:
+        slug:
+          type: string
+          example: hotel-voucher
+        name:
+          type: string
+          example: واچر هتل
+        category:
+          type: string
+          example: hotel
+        description:
+          type: string
+          nullable: true
+        locale:
+          type: string
+          example: fa
+        version:
+          type: integer
+          example: 1
+        page_size:
+          type: string
+          enum: [A4, A3, A5, Letter, Legal, Custom]
+          example: A4
+        orientation:
+          type: string
+          enum: [portrait, landscape]
+          example: portrait
+        margins:
+          type: object
+          properties:
+            top:
+              type: number
+            right:
+              type: number
+            bottom:
+              type: number
+            left:
+              type: number
+        variables:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemplateVariable"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-01-01T10:00:00+03:30"
+
+    TemplateDetail:
+      allOf:
+        - $ref: "#/components/schemas/Template"
+        - type: object
+          properties:
+            sample_data:
+              type: object
+              additionalProperties: true
+              description: داده نمونه ساخته‌شده از مقادیر پیش‌فرض متغیرها
+              example:
+                guest_name: null
+                room_count: 1
+
+    GenerateRequest:
+      type: object
+      required: [template, data]
+      properties:
+        template:
+          type: string
+          description: slug قالب (باید فعال و برای پروژه مجاز باشد)
+          example: hotel-voucher
+        reference:
+          type: string
+          nullable: true
+          maxLength: 120
+          description: مرجع اختیاری سند برای جستجو در پنل
+          example: "BOOKING-1402-0091"
+        data:
+          type: object
+          additionalProperties: true
+          description: |
+            مقادیر متغیرهای قالب. کلیدها همان `variables[].name` هستند.
+          example:
+            guest_name: علی رضایی
+            hotel_name: هتل پارسیان
+            booking_reference: "HZ-99231"
+            check_in: "2026-02-01"
+            check_out: "2026-02-05"
+            room_count: 2
+            total_price: 48500000
+            currency: IRR
+        options:
+          type: object
+          properties:
+            format:
+              type: string
+              enum: [A4, A3, A5, Letter, Legal, Custom]
+              default: A4
+            orientation:
+              type: string
+              enum: [portrait, landscape]
+              default: portrait
+          example:
+            format: A4
+            orientation: portrait
+
+    QueueResponse:
+      type: object
+      required: [id, status, status_url, download_url, created_at]
+      properties:
+        id:
+          type: string
+          example: "01JABCDEFGHJKMNPQRSTVWXYZ0"
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          example: pending
+        status_url:
+          type: string
+          format: uri
+          example: "https://pdf.as7th.com/api/v1/documents/01JABCDEFGHJKMNPQRSTVWXYZ0/status"
+        download_url:
+          type: string
+          format: uri
+          description: لینک امضاشده‌ی دانلود (پس از completed معتبر است)
+          example: "https://pdf.as7th.com/api/v1/documents/01JABCDEFGHJKMNPQRSTVWXYZ0/download/signed?expires=1767225600&signature=..."
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-01-01T10:00:00+03:30"
+
+    DocumentStatus:
+      type: object
+      required: [id, status, template]
+      properties:
+        id:
+          type: string
+          example: "01JABCDEFGHJKMNPQRSTVWXYZ0"
+        reference:
+          type: string
+          nullable: true
+          example: "BOOKING-1402-0091"
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          example: completed
+        template:
+          type: object
+          properties:
+            slug:
+              type: string
+              nullable: true
+            name:
+              type: string
+              nullable: true
+            version:
+              type: integer
+              nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        file_size:
+          type: integer
+          nullable: true
+          description: حجم فایل به بایت
+        download_url:
+          type: string
+          format: uri
+          nullable: true
+          description: فقط برای اسناد completed و غیرمنقضی
+        error:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+              nullable: true
+              example: GOTENBERG_UNAVAILABLE
+            message:
+              type: string
+              nullable: true
+
+    HealthEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [ok, degraded]
+            service:
+              type: string
+              example: pdf-service
+            version:
+              type: string
+              example: v1
+            timestamp:
+              type: string
+              format: date-time
+            checks:
+              type: object
+              properties:
+                database:
+                  type: string
+                  enum: [ok, error]
+                gotenberg:
+                  type: string
+                  enum: [ok, unavailable]
+        meta:
+          type: object
+        request_id:
+          type: string
+          format: uuid
+
+  responses:
+    Unauthorized:
+      description: کلید API نامعتبر، منقضی، لغو شده یا هدر Authorization موجود نیست (INVALID_API_KEY)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          examples:
+            missingOrInvalidKey:
+              value:
+                success: false
+                error:
+                  code: INVALID_API_KEY
+                  message: کلید API نامعتبر، منقضی یا لغو شده است.
+                  details: {}
+                request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+    RateLimited:
+      description: |
+        عبور از سقف نرخ (RATE_LIMIT_EXCEEDED) یا اتمام سهمیه ماهانه
+        (MONTHLY_QUOTA_EXCEEDED). هدرهای Retry-After و X-RateLimit-* را بررسی کنید.
+      headers:
+        Retry-After:
+          description: ثانیه‌های باقی‌مانده تا تلاش مجاز بعدی
+          schema:
+            type: integer
+          example: 42
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          example: 60
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          example: 0
+        X-RateLimit-Reset:
+          description: timestamp یونیکس بازنشانی سقف
+          schema:
+            type: integer
+          example: 1767225600
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          examples:
+            rateLimitExceeded:
+              value:
+                success: false
+                error:
+                  code: RATE_LIMIT_EXCEEDED
+                  message: تعداد درخواست‌ها بیش از حد مجاز است؛ لطفاً بعداً تلاش کنید.
+                  details: {}
+                request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"
+            monthlyQuotaExceeded:
+              value:
+                success: false
+                error:
+                  code: MONTHLY_QUOTA_EXCEEDED
+                  message: سهمیه ماهانه این پروژه به پایان رسیده است.
+                  details: {}
+                request_id: "b1d9b8f6-3d7c-4a4a-9a37-6d0e2f4c1a11"

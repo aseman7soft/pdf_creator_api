@@ -1,0 +1,80 @@
+# =============================================================================
+# systemd unit — PDF Service Queue Worker
+# =============================================================================
+#
+# نصب:
+#   sudo cp deploy/systemd/pdf-queue.service /etc/systemd/system/pdf-queue.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now pdf-queue.service
+#   sudo systemctl status pdf-queue.service
+#
+# - User=www-data و WorkingDirectory=/var/www/pdf-service
+# - tries/timeout/backoff از فایل محیطی خوانده می‌شوند:
+#     /etc/default/pdf-service
+#   (این فایل را deploy.sh از .env می‌سازد یا دستی بسازید)
+#
+# نمونهٔ /etc/default/pdf-service:
+#   PDF_QUEUE_NAME=documents
+#   PDF_QUEUE_TRIES=3
+#   PDF_QUEUE_TIMEOUT=180
+#   PDF_QUEUE_BACKOFF=15
+#
+# - اگر فایل محیطی موجود نباشد، مقادیر پیش‌فرض داخل ExecStart استفاده می‌شود.
+# - بعد از هر deploy: sudo systemctl restart pdf-queue.service
+# - برای افزایش ظرفیت: چند instance از template `pdf-queue@.service`
+#   بسازید (نمونه در انتهای همین فایل، کامنت‌شده).
+# =============================================================================
+
+[Unit]
+Description=Central PDF Service - queue worker (documents)
+Documentation=file:///var/www/pdf-service/docs/OPERATIONS.md
+After=network-online.target mysql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/pdf-service
+EnvironmentFile=-/etc/default/pdf-service
+
+# --queue / --tries / --timeout / --backoff باید با PDF_QUEUE_* در .env
+# هماهنگ باشند (config/pdf.php).
+ExecStart=/bin/sh -c 'exec /usr/bin/php8.5 artisan queue:work \
+    --queue="${PDF_QUEUE_NAME:-documents}" \
+    --tries="${PDF_QUEUE_TRIES:-3}" \
+    --timeout="${PDF_QUEUE_TIMEOUT:-180}" \
+    --backoff="${PDF_QUEUE_BACKOFF:-15}" \
+    --sleep=1 --max-jobs=500 --no-interaction'
+
+Restart=always
+RestartSec=5
+# توقف تمیز: SIGTERM به worker، سپس SIGKILL در صورت نیاز
+KillSignal=SIGTERM
+TimeoutStopSec=200
+
+# پاک‌سازی محیط
+Environment=APP_ENV=production
+Environment=LOG_CHANNEL=stack
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pdf-queue
+
+# محدودیت‌های ایمنی (اختیاری؛ در صورت نیاز با ظرفیت سرور هماهنگ کنید)
+# MemoryMax=1G
+# CPUQuota=200%
+
+[Install]
+WantedBy=multi-user.target
+
+# =============================================================================
+# نمونهٔ template برای چند worker (کامنت‌شده):
+#
+#   sudo cp /etc/systemd/system/pdf-queue.service /etc/systemd/system/pdf-queue@.service
+#   # در فایل @، Description را تغییر دهید و از %i برای شناسه استفاده کنید.
+#   sudo systemctl enable --now pdf-queue@1.service pdf-queue@2.service
+#
+# تعداد workerها را با ظرفیت Gotenberg (CPU/RAM) و تعداد رندر هم‌زمان
+# هماهنگ کنید. جزئیات: docs/OPERATIONS.md بخش مقیاس‌دادن workerها.
+# =============================================================================

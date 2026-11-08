@@ -1,0 +1,36 @@
+# =============================================================================
+# systemd unit — PDF Service Scheduler (oneshot)
+# =============================================================================
+#
+# این سرویس توسط pdf-scheduler.timer هر دقیقه اجرا می‌شود و دستور
+# `php artisan schedule:run` را اجرا می‌کند (پاک‌سازی اسناد منقضی،
+# پاک‌سازی idempotency keys و هر task زمان‌بندی‌شده در routes/console.php).
+#
+# نصب:
+#   sudo cp deploy/systemd/pdf-scheduler.service /etc/systemd/system/pdf-scheduler.service
+#   sudo cp deploy/systemd/pdf-scheduler.timer   /etc/systemd/system/pdf-scheduler.timer
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now pdf-scheduler.timer
+#   sudo systemctl list-timers pdf-scheduler.timer
+# =============================================================================
+
+[Unit]
+Description=Central PDF Service - Laravel scheduler (one-shot)
+Documentation=file:///var/www/pdf-service/docs/OPERATIONS.md
+After=network-online.target mysql.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/pdf-service
+
+ExecStart=/usr/bin/php8.5 artisan schedule:run --no-interaction
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pdf-scheduler
+
+# اجرای scheduler نباید برای مدت طولانی قفل بماند
+TimeoutStartSec=300

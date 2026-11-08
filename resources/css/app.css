@@ -1,0 +1,27 @@
+/*
+ * Admin panel stylesheet (Persian RTL).
+ *
+ * Order matters: every @import must come before other statements, then the
+ * local font faces, then the project theme.
+ */
+@import 'bootstrap/dist/css/bootstrap.rtl.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import './admin-theme.css';
+
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('../fonts/Vazirmatn-Regular.woff2') format('woff2'),
+        url('../fonts/Vazirmatn-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('../fonts/Vazirmatn-Bold.woff2') format('woff2'),
+        url('../fonts/Vazirmatn-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
