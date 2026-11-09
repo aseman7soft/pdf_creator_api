@@ -111,7 +111,7 @@ final class PdfOptions
             'scale' => $this->formatInches($this->scale),
             'landscape' => $this->landscape ? 'true' : 'false',
             'preferCssPageSize' => $this->preferCssPageSize ? 'true' : 'false',
-            'displayHeaderFooter' => $this->displayHeaderFooter ? 'true' : 'false',
+            // Gotenberg 9+: omit displayHeaderFooter (unknown form field); header.html/footer.html auto-enable.
         ];
     }
 

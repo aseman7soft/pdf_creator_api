@@ -69,7 +69,7 @@ class GotenbergServiceTest extends TestCase
             $this->assertSame('1', $fields['scale']);
             $this->assertSame('false', $fields['landscape']);
             $this->assertSame('true', $fields['preferCssPageSize']);
-            $this->assertSame('true', $fields['displayHeaderFooter']);
+            $this->assertArrayNotHasKey('displayHeaderFooter', $fields);
 
             $files = $this->files($request);
             $indexHtml = collect($files)->firstWhere('filename', 'index.html');

@@ -1,0 +1,16 @@
+name: Deploy to auto2
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-pdf-auto2
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, pdf-service, auto2]
+    steps:
+      - name: Deploy pdf_creator_api
+        run: bash /var/www/pdf-service/deploy/ci-deploy.sh
