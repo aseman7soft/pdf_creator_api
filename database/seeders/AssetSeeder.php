@@ -43,7 +43,7 @@ class AssetSeeder extends Seeder
             $extension = strtolower(pathinfo($font['source'], PATHINFO_EXTENSION));
             $path = 'assets/fonts/'.$font['handle'].'.'.$extension;
             $contents = (string) file_get_contents($font['source']);
-            Storage::disk($disk)->put($path, $contents);
+            $this->putShared($disk, $path, $contents);
 
             Asset::query()->updateOrCreate(
                 ['handle' => $font['handle']],
@@ -65,7 +65,7 @@ class AssetSeeder extends Seeder
         if (is_file($logoSource)) {
             $contents = (string) file_get_contents($logoSource);
             $path = 'assets/images/aseman-haftom-logo.png';
-            Storage::disk($disk)->put($path, $contents);
+            $this->putShared($disk, $path, $contents);
             Asset::query()->updateOrCreate(
                 ['handle' => 'aseman-haftom-logo'],
                 [
@@ -82,6 +82,30 @@ class AssetSeeder extends Seeder
             );
         } else {
             $this->command?->warn("Logo file missing: {$logoSource}");
+        }
+    }
+
+    /**
+     * Write an asset and make its directory group-traversable (02770) so
+     * php-fpm (www-data) can read files created by the pdf-runner seeder
+     * even when the process umask is 077.
+     */
+    private function putShared(string $disk, string $path, string $contents): void
+    {
+        $directory = dirname($path);
+        if ($directory !== '.' && $directory !== '') {
+            Storage::disk($disk)->makeDirectory($directory);
+            $this->chmodIfPossible(Storage::disk($disk)->path($directory), 02770);
+        }
+
+        Storage::disk($disk)->put($path, $contents);
+        $this->chmodIfPossible(Storage::disk($disk)->path($path), 0664);
+    }
+
+    private function chmodIfPossible(string $target, int $mode): void
+    {
+        if (is_dir($target) || is_file($target)) {
+            @chmod($target, $mode);
         }
     }
 }

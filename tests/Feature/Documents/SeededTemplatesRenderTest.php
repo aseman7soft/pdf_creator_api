@@ -43,6 +43,10 @@ class SeededTemplatesRenderTest extends TestCase
         $this->assertStringContainsString('هتل پارسیان', $hotelRendered->html);
         $this->assertStringContainsString('BK-100', $hotelRendered->html);
         $this->assertStringContainsString('علی', $hotelRendered->html);
+        $this->assertStringContainsString('علی رضایی', $hotelRendered->html);
+        $this->assertTrue(mb_check_encoding($hotelRendered->html, 'UTF-8'));
+        // UTF-8 bytes of «علی» misread as Latin-1 must never appear in output.
+        $this->assertStringNotContainsString('Ø¹Ù„ÛŒ', $hotelRendered->html);
         $this->assertStringContainsString('12,500,000', $hotelRendered->html);
         $this->assertStringNotContainsString('asset://', $hotelRendered->html);
         $this->assertArrayHasKey('vazirmatn-regular.woff2', $hotelRendered->assets);
