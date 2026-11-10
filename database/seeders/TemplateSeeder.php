@@ -51,7 +51,10 @@ class TemplateSeeder extends Seeder
 <body>
     <div class="page">
         <div class="header">
-            <div class="brand">سرویس مرکزی اسناد</div>
+            <div class="brand" style="display:flex;align-items:center;gap:10px;">
+                <img src="asset://aseman-haftom-logo" alt="آسمان هفتم" style="height:48px;">
+                <span>{{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }}</span>
+            </div>
             <div class="doc-title">واچر رزرو هتل</div>
         </div>
 
@@ -74,6 +77,10 @@ class TemplateSeeder extends Seeder
                 <td>@jdate($check_out)</td>
             </tr>
             <tr>
+                <th>تعداد شب</th>
+                <td>{{ nights ?? '—' }}</td>
+            </tr>
+            <tr>
                 <th>تعداد اتاق</th>
                 <td>{{ room_count }} اتاق</td>
             </tr>
@@ -90,7 +97,7 @@ class TemplateSeeder extends Seeder
                 <tr>
                     <th>#</th>
                     <th>نام</th>
-                    <th>شماره گذرنامه</th>
+                    <th>کد ملی / گذرنامه</th>
                 </tr>
             </thead>
             <tbody>
@@ -98,7 +105,7 @@ class TemplateSeeder extends Seeder
                 <tr>
                     <td>{{ loop.iteration }}</td>
                     <td>{{ guest.name }}</td>
-                    <td>{{ guest.passport ?? '—' }}</td>
+                    <td>{{ guest.national_id ?? guest.passport ?? '—' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -118,7 +125,7 @@ class TemplateSeeder extends Seeder
 
         <div class="signature">
             <span>مهر و امضای آژانس</span>
-            <span>این سند به صورت الکترونیکی تولید شده است.</span>
+            <span>این سند توسط آژانس مسافرتی آسمان هفتم صادر شده است.</span>
         </div>
     </div>
 </body>
@@ -128,7 +135,7 @@ HTML;
         $footer = <<<'HTML'
 <div style="width: 100%; font-family: 'Vazirmatn', Tahoma, sans-serif; font-size: 9px; color: #64748b; direction: rtl; padding: 0 12mm;">
     <div style="display: flex; justify-content: space-between;">
-        <span>سرویس مرکزی تولید اسناد - pdf.as7th.com</span>
+        <span>آژانس مسافرتی آسمان هفتم</span>
         <span>صفحه <span class="pageNumber"></span> از <span class="totalPages"></span></span>
     </div>
 </div>
@@ -139,7 +146,7 @@ HTML;
             [
                 'name' => 'واچر هتل',
                 'category' => 'hotel',
-                'description' => 'واچر رزرو هتل برای پروژه‌های گردشگری، با پشتیبانی کامل از فارسی و راست‌چین.',
+                'description' => 'واچر رزرو هتل آسمان هفتم — فارسی/RTL، بدون برند تأمین‌کننده.',
                 'html' => $html,
                 'footer_html' => $footer,
                 'is_active' => true,
@@ -162,6 +169,9 @@ HTML;
             ['name' => 'currency', 'label' => 'واحد پول', 'type' => 'string', 'is_required' => true, 'default_value' => 'IRR', 'validation_rules' => 'max:10', 'sort_order' => 8],
             ['name' => 'guests', 'label' => 'اسامی همراهان', 'type' => 'array', 'is_required' => false, 'description' => 'آرایه‌ای از اشیاء با کلیدهای name و passport', 'sort_order' => 9],
             ['name' => 'notes', 'label' => 'توضیحات', 'type' => 'text', 'is_required' => false, 'validation_rules' => 'max:1000', 'sort_order' => 10],
+            ['name' => 'nights', 'label' => 'تعداد شب', 'type' => 'integer', 'is_required' => false, 'min_value' => 0, 'sort_order' => 11],
+            ['name' => 'agency_name', 'label' => 'نام آژانس', 'type' => 'string', 'is_required' => false, 'default_value' => 'آژانس مسافرتی آسمان هفتم', 'sort_order' => 12],
+            ['name' => 'agency_logo', 'label' => 'لوگوی آژانس (URL)', 'type' => 'string', 'is_required' => false, 'sort_order' => 13],
         ];
 
         $this->syncVariables($template, $variables);

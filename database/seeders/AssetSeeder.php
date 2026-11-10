@@ -60,5 +60,28 @@ class AssetSeeder extends Seeder
                 ],
             );
         }
+
+        $logoSource = resource_path('images/aseman-haftom-logo.png');
+        if (is_file($logoSource)) {
+            $contents = (string) file_get_contents($logoSource);
+            $path = 'assets/images/aseman-haftom-logo.png';
+            Storage::disk($disk)->put($path, $contents);
+            Asset::query()->updateOrCreate(
+                ['handle' => 'aseman-haftom-logo'],
+                [
+                    'name' => 'لوگوی آسمان هفتم',
+                    'type' => AssetType::Image,
+                    'mime_type' => 'image/png',
+                    'extension' => 'png',
+                    'size' => strlen($contents),
+                    'disk' => $disk,
+                    'path' => $path,
+                    'checksum' => hash('sha256', $contents),
+                    'description' => 'لوگوی رسمی آژانس مسافرتی آسمان هفتم برای واچر هتل',
+                ],
+            );
+        } else {
+            $this->command?->warn("Logo file missing: {$logoSource}");
+        }
     }
 }
