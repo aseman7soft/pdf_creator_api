@@ -14,26 +14,44 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = (string) (env('ADMIN_EMAIL') ?: 'admin@as7th.com');
-        $password = (string) env('ADMIN_PASSWORD');
+        $config = (array) config('admin.default_user', []);
+
+        $name = (string) ($config['name'] ?? 'مدیر سیستم');
+        $email = (string) ($config['email'] ?? 'admin@tarahsite.net');
+        $password = (string) ($config['password'] ?? '');
         $generated = false;
 
-        if ($password === '') {
-            $password = Str::password(16);
-            $generated = true;
-        }
+        /** @var User|null $user */
+        $user = User::query()->where('email', $email)->first();
 
-        /** @var User $user */
-        $user = User::query()->updateOrCreate(
-            ['email' => $email],
-            [
-                'name' => 'مدیر سیستم',
-                'password' => Hash::make($password),
+        if ($user instanceof User) {
+            $user->forceFill([
+                'name' => $name,
+                'role' => UserRole::Admin,
+                'is_active' => true,
+                'email_verified_at' => $user->email_verified_at ?? now(),
+            ]);
+
+            if ($password !== '' && ! Hash::check($password, (string) $user->getRawOriginal('password'))) {
+                $user->password = $password;
+            }
+
+            $user->save();
+        } else {
+            if ($password === '') {
+                $password = Str::password(16);
+                $generated = true;
+            }
+
+            $user = User::query()->create([
+                'name' => $name,
+                'email' => $email,
+                'password' => $password,
                 'role' => UserRole::Admin,
                 'is_active' => true,
                 'email_verified_at' => now(),
-            ],
-        );
+            ]);
+        }
 
         $this->command?->info("Admin user: {$user->email}");
 

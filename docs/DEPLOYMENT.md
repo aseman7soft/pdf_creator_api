@@ -231,7 +231,7 @@ API_KEY_PREFIX=pdfsvc
 API_IDEMPOTENCY_TTL_HOURS=24
 API_KEY_HASH_SALT=<OUTPUT_OF_openssl_rand_hex_32>
 
-ADMIN_EMAIL=admin@as7th.com
+ADMIN_EMAIL=admin@tarahsite.net
 ADMIN_PASSWORD=                  # برای seed اولیه؛ یا خالی بگذارید تا رمز تصادفی چاپ شود
 ```
 
@@ -263,7 +263,7 @@ sudo -u www-data php artisan db:seed --force
 ```
 
 - `SettingsSeeder` → تنظیمات پیش‌فرض
-- `AdminUserSeeder` → کاربر مدیر (`ADMIN_EMAIL`)؛ اگر `ADMIN_PASSWORD` خالی باشد رمز تصادفی **یک‌بار** در خروجی چاپ می‌شود — آن را فوراً در جای امن ذخیره و سپس رمز را از پنل تغییر دهید.
+- `AdminUserSeeder` → کاربر مدیر (`ADMIN_EMAIL`، پیش‌فرض `admin@tarahsite.net`)؛ اگر `ADMIN_PASSWORD` خالی باشد رمز تصادفی **یک‌بار** در خروجی چاپ می‌شود — آن را فوراً در جای امن ذخیره و سپس رمز را از پنل تغییر دهید. اگر `ADMIN_PASSWORD` مقدار داشته باشد همان رمز تنظیم می‌شود (و در اجرای مجدد seed فقط وقتی رمز عوض شود، به‌روزرسانی می‌شود).
 - `AssetSeeder` → فونت‌های Vazirmatn روی دیسک خصوصی
 - `TemplateSeeder` → سه قالب نمونه (`hotel-voucher`, `invoice-standard`, `tour-itinerary`)
 - `DemoApiProjectSeeder` → فقط در `local`/`testing`؛ در production پروژهٔ نمایشی ساخته **نمی‌شود**.

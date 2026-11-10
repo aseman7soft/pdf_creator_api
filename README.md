@@ -189,6 +189,8 @@ npm run build
 
 سپس وارد `https://pdf-creator.test/admin` شوید. دسترسی‌های Herd و مسیر PHP توسط پنل Herd مدیریت می‌شوند.
 
+> **ورود پیش‌فرض پنل:** ایمیل `admin@tarahsite.net` و رمز `As123321_14` (کاربری که `AdminUserSeeder` می‌سازد). بعد از اولین ورود، رمز را از `/admin/users` تغییر دهید.
+
 > **میان‌بر:** اسکریپت آمادهٔ Composer نیز وجود دارد (`composer run setup`) که `composer install`، ساخت `.env`، `key:generate`، `migrate --force`، `npm install` و `npm run build` را انجام می‌دهد — اما seed و اجرای queue را شامل نمی‌شود.
 
 ### اوبونتو / لینوکس
@@ -206,6 +208,8 @@ npm ci && npm run build
 php artisan serve            # یا Nginx + PHP-FPM
 php artisan queue:work --queue=documents --tries=3 --timeout=180 --backoff=15
 ```
+
+> **ورود پیش‌فرض پنل:** ایمیل `admin@tarahsite.net` و رمز `As123321_14` (در production رمز را در `.env` تنظیم یا بعد از اولین ورود تغییر دهید).
 
 ## تنظیمات محیطی (env)
 
@@ -280,10 +284,20 @@ php artisan queue:work --queue=documents --tries=3 --timeout=180 --backoff=15
 
 ### ساخت مدیر اولیه
 
-| متغیر | توضیح |
+پیش‌فرض‌های پروژه (در `config/admin.php` و `.env.example`) یک مدیر آمادهٔ ورود می‌سازند:
+
+| ورود پیش‌فرض | مقدار |
 |---|---|
-| `ADMIN_EMAIL` | ایمیل مدیر ساخته‌شده توسط seeder |
-| `ADMIN_PASSWORD` | رمز مدیر؛ اگر خالی باشد یک رمز تصادفی ساخته و **یک‌بار** چاپ می‌شود |
+| ایمیل | `admin@tarahsite.net` |
+| رمز | `As123321_14` |
+
+| متغیر | پیش‌فرض | توضیح |
+|---|---|---|
+| `ADMIN_EMAIL` | `admin@tarahsite.net` | ایمیل مدیر ساخته‌شده توسط seeder |
+| `ADMIN_PASSWORD` | `As123321_14` در `.env.example` | رمز مدیر؛ اگر خالی باشد یک رمز تصادفی ساخته و **یک‌بار** چاپ می‌شود. در production مقدار امن تنظیم کنید |
+| `ADMIN_NAME` | `مدیر سیستم` | نام نمایشی مدیر |
+
+> رمز پیش‌فرض را در production قبل از اولین استقرار از `.env` عوض کنید (یا `ADMIN_PASSWORD` را خالی بگذارید تا رمز تصادفی ساخته شود).
 
 ## دیتابیس، مهاجرت و دادهٔ اولیه
 
@@ -305,6 +319,7 @@ $php = "C:\Users\softa\.config\herd\bin\php85\php.exe"
 ### مدیر
 
 - راه اول (seed): `ADMIN_EMAIL` و `ADMIN_PASSWORD` را در `.env` تنظیم و `php artisan db:seed --class=AdminUserSeeder` را اجرا کنید. اگر `ADMIN_PASSWORD` خالی باشد، رمز تصادفی تولید و یک‌بار چاپ می‌شود.
+- **مدیر پیش‌فرض پروژه:** `admin@tarahsite.net` / `As123321_14` — با `php artisan migrate --seed` ساخته می‌شود و از `/admin/login` قابل استفاده است.
 - راه دوم (پنل): با یک کاربر `admin` وارد `/admin/users` شوید و کاربر جدید بسازید.
 - نقش‌ها: `admin` (کامل)، `manager` (قالب/پروژه/سند/صف)، `viewer` (فقط مشاهده/دانلود).
 
