@@ -22,7 +22,7 @@
         .meta td { vertical-align: middle; }
         .meta-card { background: #f5f7fb; border: 1px solid #e3e8ef; border-radius: 12px; padding: 8px 10px; }
         .meta-grid { width: 100%; border-collapse: collapse; }
-        .meta-grid td { border: 0; padding: 3px 6px; width: 33%; }
+        .meta-grid td { border: 0; padding: 6px 8px; width: 25%; }
         .meta-grid .lbl { display: block; color: #5e6b7a; font-size: 10px; }
         .meta-grid .val { font-weight: 700; color: #12356b; }
         .qr { width: 118px; text-align: center; padding-right: 8px; }
@@ -89,12 +89,8 @@
                             <tr>
                                 <td><span class="lbl">شماره واچر</span><span class="val ltr">{{ voucher_number ?? booking_reference }}</span></td>
                                 <td><span class="lbl">کد رزرو</span><span class="val ltr">{{ re_code ?? booking_reference }}</span></td>
-                                <td><span class="lbl">تاریخ صدور</span><span class="val">@if(issue_date_label){{ issue_date_label | digits }}@elseif(issue_date){{ issue_date | jdate('Y/m/d') | digits }}@else{{ now() | jdate('Y/m/d') | digits }}@endif</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="lbl">کد تأیید تأمین‌کننده</span><span class="val ltr">{{ confirmation_code ?? reservation_code ?? '—' }}</span></td>
                                 <td><span class="lbl">شماره فاکتور</span><span class="val ltr">{{ invoice_number ?? '—' }}</span></td>
-                                <td><span class="lbl">شناسه تأمین‌کننده</span><span class="val ltr">{{ supplier_code ?? hub_public_id ?? '—' }}</span></td>
+                                <td><span class="lbl">تاریخ صدور</span><span class="val">@if(issue_date_label){{ issue_date_label | digits }}@elseif(issue_date){{ issue_date | jdate('Y/m/d') | digits }}@else{{ now() | jdate('Y/m/d') | digits }}@endif</span></td>
                             </tr>
                         </table>
                     </div>
@@ -146,7 +142,6 @@
                     <th class="num">بزرگسال</th>
                     <th class="num">کودک</th>
                     <th class="num">تخت اضافه</th>
-                    <th>کد تأیید</th>
                 </tr>
             </thead>
             <tbody>
@@ -158,7 +153,6 @@
                     <td class="num">{{ (room.adults ?? room.adult_count ?? '—') | digits }}</td>
                     <td class="num">{{ (room.children ?? room.child_count ?? '—') | digits }}</td>
                     <td class="num">{{ (room.extra_beds ?? room.extraBeds ?? '—') | digits }}</td>
-                    <td class="ltr">{{ room.confirmation_code ?? room.confirmationCode ?? '—' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -256,7 +250,7 @@
 
         <div class="sign">
             <div class="box">مهر و امضای آژانس</div>
-            <div>این واچر بدون مهر آژانس یا کد تأیید، سند قطعی اقامت نیست.</div>
+            <div>این واچر بدون مهر آژانس، سند قطعی اقامت نیست.</div>
         </div>
     </div>
 </body>

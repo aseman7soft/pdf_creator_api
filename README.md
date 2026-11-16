@@ -528,6 +528,8 @@ curl -s -o ticket.pdf \
 JSON
 ```
 
+فیلدهای تأمین‌کننده (`supplier_code`، `confirmation_code`، `reservation_code`، `hub_public_id` و `rooms[].confirmation_code`) در payload قبول می‌شوند تا درخواست‌های فعلی خطا ندهند، ولی روی واچر و بلیط چاپ نمی‌شوند. روی سند فقط شماره واچر، کد رزرو آژانس (`re_code` یا `booking_reference`)، شماره فاکتور، PNR، کد پیگیری و شماره بلیط دیده می‌شود.
+
 فیلدهای اختیاری اگر نباشند بخش مربوط پنهان می‌شود. آرایهٔ مسیر به ترتیب `segments`، سپس `reservation_flight_segments`، سپس `route_snapshot.card.legs` خوانده می‌شود. نام ستون‌های جدول `reservation_flight_segments` (`direction`, `from_city_name`, `to_city_name`, `depart_date`, `depart_time`, `airline`, `flight_number`) و نام‌های کارت پرواز سایت (`flightNumber`, `originCityLabel`, `departureTime`, `cabinClassLabel`, `baggage`, …) هر دو روی هر سگمنت قبول می‌شوند. مسافر هم `first_name`/`last_name` و هم `firstName`/`lastName` را می‌پذیرد.
 
 طرح کامل فیلدها از `GET /api/v1/templates/{slug}` (آرایهٔ `variables`) و از فایل‌های نمونه است.

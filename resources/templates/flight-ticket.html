@@ -98,7 +98,7 @@
                         <tr>
                             <td><span class="lbl">شماره بلیط</span><span class="val ltr">{{ ticket_number ?? '—' }}</span></td>
                             <td><span class="lbl">کد پیگیری</span><span class="val ltr">{{ tracking_code ?? '—' }}</span></td>
-                            <td><span class="lbl">شناسه رزرو</span><span class="val ltr">{{ hub_public_id ?? re_code ?? '—' }}</span></td>
+                            <td><span class="lbl">کد رزرو</span><span class="val ltr">{{ re_code ?? '—' }}</span></td>
                             <td><span class="lbl">تاریخ صدور</span><span class="val">@if(issued_at_label){{ issued_at_label | digits }}@elseif(issued_at){{ issued_at | jdate('Y/m/d') | digits }}@else{{ now() | jdate('Y/m/d') | digits }}@endif</span></td>
                         </tr>
                     </table>
@@ -314,7 +314,7 @@
         <div class="note"><strong>توضیحات: </strong>{{ notes }}</div>
         @endif
 
-        <p class="foot-note">حضور در فرودگاه حداقل دو ساعت قبل از پرواز داخلی و سه ساعت قبل از پرواز خارجی توصیه می‌شود. این بلیط توسط {{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }} صادر شده است@if(supplier_code) · تأمین‌کننده: {{ supplier_code }}@endif.</p>
+        <p class="foot-note">حضور در فرودگاه حداقل دو ساعت قبل از پرواز داخلی و سه ساعت قبل از پرواز خارجی توصیه می‌شود. این بلیط توسط {{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }} صادر شده است.</p>
     </div>
 </body>
 </html>
