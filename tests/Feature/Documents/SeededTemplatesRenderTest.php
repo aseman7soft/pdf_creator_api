@@ -123,7 +123,14 @@ class SeededTemplatesRenderTest extends TestCase
         $this->assertStringContainsString('هتل اسپیناس پالاس', $hotelHtml);
         $this->assertStringContainsString('اتاق توئین', $hotelHtml);
         $this->assertStringContainsString('کیان رضایی', $hotelHtml);
-        $this->assertStringContainsString('SNP-993311', $hotelHtml);
+        $this->assertStringContainsString('VCH-88421', $hotelHtml);
+        $this->assertStringContainsString('R-55210', $hotelHtml);
+        $this->assertStringContainsString('INV-1405-2201', $hotelHtml);
+        $this->assertStringNotContainsString('SNP-993311', $hotelHtml);
+        $this->assertStringNotContainsString('hotel_hub', $hotelHtml);
+        $this->assertStringNotContainsString('hb_8f3a21', $hotelHtml);
+        $this->assertStringNotContainsString('RM-1', $hotelHtml);
+        $this->assertStringNotContainsString('تأمین‌کننده', $hotelHtml);
         $this->assertStringContainsString('۱۸٬۰۰۰٬۰۰۰', $hotelHtml);
         $this->assertStringContainsString('<svg', $hotelHtml);
         $this->assertStringNotContainsString('asset://', $hotelHtml);
@@ -150,6 +157,10 @@ class SeededTemplatesRenderTest extends TestCase
         $this->assertStringContainsString('بلیط هواپیما', $oneWayHtml);
         $this->assertStringContainsString('یک‌طرفه', $oneWayHtml);
         $this->assertStringContainsString('KIS7H2', $oneWayHtml);
+        $this->assertStringContainsString('TRK-77821', $oneWayHtml);
+        $this->assertStringContainsString('R-57011', $oneWayHtml);
+        $this->assertStringNotContainsString('fl_19ab', $oneWayHtml);
+        $this->assertStringNotContainsString('flight_hub', $oneWayHtml);
         $this->assertStringContainsString('Y9 712', $oneWayHtml);
         $this->assertStringContainsString('نگار احمدی', $oneWayHtml);
         $this->assertStringContainsString('آرمین احمدی', $oneWayHtml);
@@ -159,6 +170,10 @@ class SeededTemplatesRenderTest extends TestCase
         $round = $this->sample('flight-round-trip.json');
         $roundHtml = $renderer->render($flight, $validator->validate($flight, $round))->html;
         $this->assertStringContainsString('رفت و برگشت', $roundHtml);
+        $this->assertStringContainsString('TRK-88002', $roundHtml);
+        $this->assertStringContainsString('R-57088', $roundHtml);
+        $this->assertStringNotContainsString('fl_77cd', $roundHtml);
+        $this->assertStringNotContainsString('flight_hub', $roundHtml);
         $this->assertStringContainsString('آنکارا', $roundHtml);
         $this->assertStringContainsString('استانبول', $roundHtml);
         $this->assertStringContainsString('W5 073', $roundHtml);
