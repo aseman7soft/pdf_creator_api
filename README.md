@@ -166,7 +166,7 @@ API_KEY_HASH_SALT=   # خروجی: openssl rand -hex 32  (در لوکال ثاب
 & $php artisan migrate --seed
 ```
 
-این دستور `SettingsSeeder`، `AdminUserSeeder`، `AssetSeeder` (فونت‌های Vazirmatn)، `TemplateSeeder` (قالب‌های نمونهٔ `hotel-voucher`، `invoice-standard`، `tour-itinerary`) و در محیط `local`/`testing` پروژهٔ نمایشی `demo-project` را می‌سازد. کلید API نمایشی در خروجی `db:seed` **یک‌بار** چاپ می‌شود.
+این دستور `SettingsSeeder`، `AdminUserSeeder`، `AssetSeeder` (فونت‌های Vazirmatn)، `TemplateSeeder` (قالب‌های `hotel-voucher`، `accommodation-voucher`، `flight-ticket`، `invoice-standard`، `tour-itinerary`) و در محیط `local`/`testing` پروژهٔ نمایشی `demo-project` را می‌سازد. کلید API نمایشی در خروجی `db:seed` **یک‌بار** چاپ می‌شود. روی سرور، `migrate` همان واچر اقامت و بلیط را هم می‌سازد تا بعد از deploy در دیتابیس باشند.
 
 6) ساخت assetهای فرانت‌اند:
 
@@ -483,6 +483,54 @@ curl -s -L -o document.pdf \
 - هدرهای مفید: `X-Document-Id`، `X-Generation-Time-Ms`، `X-Request-Id`، و در 429: `Retry-After` و `X-RateLimit-Limit/Remaining/Reset`.
 - `/api/v1/templates` صفحه‌بندی‌شده است (`page`, `per_page`, `search`, `category` در query) و `meta` شامل `current_page/per_page/total/last_page` است.
 - Idempotency با هدر `Idempotency-Key` (یا `X-Idempotency-Key`): همان کلید + همان بدنه همان نتیجه را برمی‌گرداند؛ بدنهٔ متفاوت → `IDEMPOTENCY_KEY_REUSED` (422).
+
+## واچر اقامت و بلیط هواپیما
+
+دو قالب فارسی RTL با فونت محلی Vazirmatn و لوگوی آسمان هفتم. تاریخ میلادی `Y-m-d` داخل قالب به جلالی تبدیل می‌شود؛ اگر سایت از قبل متن شمسی دارد آن را در فیلد `*_label` بفرستید تا دوباره تبدیل نشود. مبلغ‌ها را آمادهٔ نمایش بفرستید (سایت الان `booking.price` / `sell_price` را تومان می‌فرستد و `invoice.amount` را ریال نگه می‌دارد). QR کد رزرو یا شماره بلیط داخل خود سرویس و بدون درخواست شبکه ساخته می‌شود.
+
+| slug | کاربرد |
+| --- | --- |
+| `hotel-voucher` | همان واچر اقامت؛ مسیر فعلی `HotelBookingVoucherPdfService` بدون تغییر کار می‌کند |
+| `accommodation-voucher` | همان طرح، برای هتل / اقامتگاه / ویلا |
+| `flight-ticket` | بلیط یک‌طرفه یا رفت‌وبرگشت |
+
+`accommodation_type` عنوان را عوض می‌کند: `hotel` → هتل، `residence` (یا `Pansion` / `Apartments` / `Guesthouse` / `Motel` / `Inn` / `Traditionalhouse`) → اقامتگاه، `villa` → ویلا. `accommodation_type_label` اگر باشد عیناً استفاده می‌شود.
+
+نمونه‌ها:
+
+- `resources/templates/samples/accommodation-hotel.json`
+- `resources/templates/samples/accommodation-villa.json`
+- `resources/templates/samples/accommodation-residence.json`
+- `resources/templates/samples/flight-one-way.json`
+- `resources/templates/samples/flight-round-trip.json` (چند مسافر، سگمنت‌های `reservation_flight_segments` شامل توقف)
+
+```bash
+curl -s -D headers.txt -o voucher.pdf \
+  -H "Authorization: Bearer $PDF_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @- "$PDF_BASE_URL/api/v1/documents/generate" <<'JSON'
+{
+  "template": "accommodation-voucher",
+  "reference": "AH-HTL-1405-88421",
+  "data": { "...": "محتوای accommodation-hotel.json" }
+}
+JSON
+
+curl -s -o ticket.pdf \
+  -H "Authorization: Bearer $PDF_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @- "$PDF_BASE_URL/api/v1/documents/generate" <<'JSON'
+{
+  "template": "flight-ticket",
+  "reference": "IST4R9",
+  "data": { "...": "محتوای flight-round-trip.json" }
+}
+JSON
+```
+
+فیلدهای اختیاری اگر نباشند بخش مربوط پنهان می‌شود. آرایهٔ مسیر به ترتیب `segments`، سپس `reservation_flight_segments`، سپس `route_snapshot.card.legs` خوانده می‌شود. نام ستون‌های جدول `reservation_flight_segments` (`direction`, `from_city_name`, `to_city_name`, `depart_date`, `depart_time`, `airline`, `flight_number`) و نام‌های کارت پرواز سایت (`flightNumber`, `originCityLabel`, `departureTime`, `cabinClassLabel`, `baggage`, …) هر دو روی هر سگمنت قبول می‌شوند. مسافر هم `first_name`/`last_name` و هم `firstName`/`lastName` را می‌پذیرد.
+
+طرح کامل فیلدها از `GET /api/v1/templates/{slug}` (آرایهٔ `variables`) و از فایل‌های نمونه است.
 
 ## ساختار پروژه
 

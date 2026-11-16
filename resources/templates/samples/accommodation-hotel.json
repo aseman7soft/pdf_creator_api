@@ -1,0 +1,102 @@
+{
+  "accommodation_type": "hotel",
+  "guest_name": "علی رضایی",
+  "hotel_name": "هتل اسپیناس پالاس",
+  "booking_reference": "AH-HTL-1405-88421",
+  "voucher_number": "VCH-88421",
+  "re_code": "R-55210",
+  "reservation_code": "SNP-993311",
+  "confirmation_code": "SNP-993311",
+  "supplier_code": "hotel_hub",
+  "hub_public_id": "hb_8f3a21",
+  "invoice_number": "INV-1405-2201",
+  "status": "confirmed",
+  "status_label": "تأیید شده",
+  "check_in": "2026-12-02",
+  "check_out": "2026-12-06",
+  "check_in_label": "۱۱ آذر ۱۴۰۵",
+  "check_out_label": "۱۵ آذر ۱۴۰۵",
+  "check_in_time": "14:00",
+  "check_out_time": "12:00",
+  "nights": 4,
+  "room_count": 2,
+  "board": "صبحانه",
+  "city": "تهران",
+  "address": "خیابان کشاورز، نبش خیابان وصال",
+  "stars": 5,
+  "property_phone": "021-91000000",
+  "property": {
+    "name": "هتل اسپیناس پالاس",
+    "city": "تهران",
+    "address": "خیابان کشاورز، نبش خیابان وصال",
+    "phone": "021-91000000",
+    "stars": 5
+  },
+  "rooms": [
+    {
+      "name": "اتاق دبل رویال",
+      "board": "صبحانه",
+      "adults": 2,
+      "children": 0,
+      "extra_beds": 0,
+      "quantity": 1,
+      "confirmation_code": "RM-1"
+    },
+    {
+      "room_name": "اتاق توئین",
+      "meal": "صبحانه",
+      "adults": 1,
+      "children": 1,
+      "extra_beds": 1,
+      "confirmation_code": "RM-2"
+    }
+  ],
+  "guests": [
+    {
+      "first_name": "علی",
+      "last_name": "رضایی",
+      "national_id": "0088776655",
+      "phone": "09120000000",
+      "is_leader": true
+    },
+    {
+      "name": "مریم رضایی",
+      "nationalId": "0099112233",
+      "age_type": "بزرگسال"
+    },
+    {
+      "firstName": "کیان",
+      "lastName": "رضایی",
+      "code_meli": "0011223344",
+      "type": "کودک"
+    }
+  ],
+  "original_price": 18600000,
+  "discount": 600000,
+  "total_price": 18000000,
+  "currency": "تومان",
+  "payment": {
+    "wallet_paid": 2000000,
+    "gateway_amount": 16000000,
+    "currency": "تومان",
+    "transaction_id": "987654321",
+    "transaction_type": "درگاه",
+    "paid_at_label": "۱۰ آذر ۱۴۰۵ — ۱۸:۴۰"
+  },
+  "contact": {
+    "name": "علی رضایی",
+    "phone": "09120000000",
+    "email": "ali@example.com"
+  },
+  "rules": [
+    "ساعت ورود از ۱۴ و ساعت خروج تا ۱۲ است.",
+    "کنسلی کمتر از ۴۸ ساعت مانده به ورود، طبق قوانین هتل محاسبه می‌شود.",
+    {"label": "مدرک", "value": "کارت ملی یا گذرنامه سرگروه هنگام پذیرش لازم است."}
+  ],
+  "notes": "تخت اضافه برای کودک در اتاق توئین هماهنگ شده است.",
+  "agency_name": "آژانس مسافرتی آسمان هفتم",
+  "agency_phone": "021-91007007",
+  "agency_address": "تهران",
+  "issue_date": "2026-12-01",
+  "issue_date_label": "۱۰ آذر ۱۴۰۵"
+}

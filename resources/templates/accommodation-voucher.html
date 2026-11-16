@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>واچر اقامت</title>
+    <style>
+        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-regular') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-bold') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Vazirmatn', Tahoma, sans-serif; direction: rtl; margin: 0; color: #1b2430; font-size: 12px; line-height: 1.7; }
+        .stripe { height: 6px; background: linear-gradient(90deg, #e2231a 0 18%, #12356b 18% 100%); }
+        .page { padding: 4mm 4mm 2mm; }
+        .header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 0 8px; }
+        .brand { display: flex; align-items: center; gap: 8px; max-width: 68%; }
+        .brand img { height: 36px; width: auto; max-width: 150px; object-fit: contain; }
+        .brand .name { font-weight: 700; font-size: 15px; color: #12356b; }
+        .brand .sub { display: block; font-size: 10px; color: #5e6b7a; font-weight: 400; }
+        .doc-kicker { font-size: 11px; color: #e2231a; font-weight: 700; letter-spacing: 0; }
+        .doc-title { margin: 0; font-size: 22px; color: #12356b; line-height: 1.3; }
+        .status { display: inline-block; margin-top: 4px; background: #e8f6ee; color: #0f7a4a; border-radius: 999px; padding: 2px 10px; font-size: 11px; font-weight: 700; }
+        .meta { width: 100%; border-collapse: separate; border-spacing: 0; margin: 0 0 12px; }
+        .meta td { vertical-align: middle; }
+        .meta-card { background: #f5f7fb; border: 1px solid #e3e8ef; border-radius: 12px; padding: 8px 10px; }
+        .meta-grid { width: 100%; border-collapse: collapse; }
+        .meta-grid td { border: 0; padding: 3px 6px; width: 33%; }
+        .meta-grid .lbl { display: block; color: #5e6b7a; font-size: 10px; }
+        .meta-grid .val { font-weight: 700; color: #12356b; }
+        .qr { width: 118px; text-align: center; padding-right: 8px; }
+        .qr svg { width: 96px; height: 96px; }
+        .qr .code { font-size: 10px; color: #12356b; font-weight: 700; direction: ltr; }
+        .hero { border: 1px solid #d5deea; border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
+        .hero-top { background: #12356b; color: #fff; padding: 12px 14px; }
+        .chip { display: inline-block; background: #e2231a; color: #fff; border-radius: 999px; padding: 1px 8px; font-size: 10px; font-weight: 700; margin-left: 6px; }
+        .hero h1 { margin: 4px 0 0; font-size: 20px; }
+        .hero .where { margin: 2px 0 0; font-size: 11px; opacity: .92; }
+        .facts { width: 100%; border-collapse: collapse; background: #fff; }
+        .facts td { width: 25%; text-align: center; padding: 8px 6px; border-left: 1px solid #e3e8ef; }
+        .facts td:last-child { border-left: 0; }
+        .facts .lbl { display: block; color: #5e6b7a; font-size: 10px; }
+        .facts strong { color: #12356b; font-size: 13px; }
+        .section { margin: 12px 0 6px; font-size: 13px; font-weight: 700; color: #12356b; border-right: 4px solid #e2231a; padding-right: 8px; }
+        table.data { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        table.data th, table.data td { border: 1px solid #e3e8ef; padding: 6px 8px; text-align: right; vertical-align: top; }
+        table.data th { background: #f5f7fb; color: #12356b; font-size: 11px; font-weight: 700; }
+        table.data td.num, table.data th.num { text-align: center; white-space: nowrap; }
+        .ltr { direction: ltr; unicode-bidi: isolate; text-align: left; }
+        .money { width: 100%; border-collapse: collapse; margin-top: 4px; }
+        .money td { padding: 5px 8px; border-bottom: 1px solid #eef2f6; }
+        .money td.amt { text-align: left; direction: ltr; font-weight: 700; color: #12356b; }
+        .money tr.grand td { background: #12356b; color: #fff; font-weight: 700; font-size: 14px; border: 0; }
+        .money tr.grand td.amt { color: #fff; }
+        .note, .rules { border-radius: 10px; padding: 8px 12px; font-size: 11px; margin-top: 8px; page-break-inside: avoid; }
+        .note { background: #fff8eb; border: 1px dashed #e0b15a; }
+        .rules { background: #f7f9fc; border: 1px solid #e3e8ef; }
+        .rules li { margin: 0 16px 2px 0; }
+        .contacts { width: 100%; border-collapse: separate; border-spacing: 8px 0; margin-top: 10px; page-break-inside: avoid; }
+        .money { page-break-inside: avoid; }
+        .sign { page-break-inside: avoid; }
+        .contacts td { width: 50%; background: #f5f7fb; border-radius: 10px; padding: 8px 10px; vertical-align: top; }
+        .contacts .lbl { color: #5e6b7a; font-size: 10px; }
+        .sign { margin-top: 16px; display: flex; justify-content: space-between; color: #5e6b7a; font-size: 11px; }
+        .sign .box { width: 180px; border-top: 1px solid #c5d0de; text-align: center; padding-top: 6px; }
+        .avoid { page-break-inside: avoid; }
+    </style>
+</head>
+<body>
+    <div class="stripe"></div>
+    <div class="page">
+        <div class="header">
+            <div class="brand">
+                <img src="asset://aseman-haftom-logo" alt="آسمان هفتم">
+                <div>
+                    <span class="name">{{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }}</span>
+                    <span class="sub">سند اقامت مسافر · قابل ارائه در محل پذیرش</span>
+                </div>
+            </div>
+            <div>
+                <div class="doc-kicker">سند رزرو</div>
+                <h2 class="doc-title">واچر @if(accommodation_type_label){{ accommodation_type_label }}@elseif(accommodation_type == 'villa' || accommodation_type == 'Villa' || accommodation_type == 'ویلا')ویلا@elseif(accommodation_type == 'residence' || accommodation_type == 'اقامتگاه' || accommodation_type == 'Pansion' || accommodation_type == 'Apartments' || accommodation_type == 'Guesthouse' || accommodation_type == 'Motel' || accommodation_type == 'Inn' || accommodation_type == 'Traditionalhouse' || ((accommodation_type == null || accommodation_type == '') && stay == 'villa'))اقامتگاه@elseهتل@endif</h2>
+                <div class="status">@if(status_label){{ status_label }}@elseif(status == 'confirmed' || status == 'payed' || status == 'paid' || status == 'issued')تأیید شده@elseif(status == 'pending_payment' || status == 'pending' || status == 'payment_on')در انتظار پرداخت@elseif(status == 'cancelled' || status == 'canceled')لغو شده@elseif(status){{ status }}@else صادر شده@endif</div>
+            </div>
+        </div>
+
+        <table class="meta">
+            <tr>
+                <td>
+                    <div class="meta-card">
+                        <table class="meta-grid">
+                            <tr>
+                                <td><span class="lbl">شماره واچر</span><span class="val ltr">{{ voucher_number ?? booking_reference }}</span></td>
+                                <td><span class="lbl">کد رزرو</span><span class="val ltr">{{ re_code ?? booking_reference }}</span></td>
+                                <td><span class="lbl">تاریخ صدور</span><span class="val">@if(issue_date_label){{ issue_date_label | digits }}@elseif(issue_date){{ issue_date | jdate('Y/m/d') | digits }}@else{{ now() | jdate('Y/m/d') | digits }}@endif</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="lbl">کد تأیید تأمین‌کننده</span><span class="val ltr">{{ confirmation_code ?? reservation_code ?? '—' }}</span></td>
+                                <td><span class="lbl">شماره فاکتور</span><span class="val ltr">{{ invoice_number ?? '—' }}</span></td>
+                                <td><span class="lbl">شناسه تأمین‌کننده</span><span class="val ltr">{{ supplier_code ?? hub_public_id ?? '—' }}</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td class="qr">
+                    {{ (voucher_number ?? booking_reference) | qr }}
+                    <div class="code">{{ voucher_number ?? booking_reference }}</div>
+                </td>
+            </tr>
+        </table>
+
+        <div class="hero avoid">
+            <div class="hero-top">
+                <span class="chip">@if(accommodation_type_label){{ accommodation_type_label }}@elseif(accommodation_type == 'villa' || accommodation_type == 'Villa' || accommodation_type == 'ویلا')ویلا@elseif(accommodation_type == 'residence' || accommodation_type == 'اقامتگاه' || accommodation_type == 'Pansion' || accommodation_type == 'Apartments' || accommodation_type == 'Guesthouse' || accommodation_type == 'Motel' || accommodation_type == 'Inn' || accommodation_type == 'Traditionalhouse' || ((accommodation_type == null || accommodation_type == '') && stay == 'villa'))اقامتگاه@else هتل@endif</span>
+                @if((property.stars ?? stars ?? 0) > 0)<span class="chip">{{ (property.stars ?? stars) | digits }} ستاره</span>@endif
+                <h1>{{ property.name ?? property_name ?? hotel_name }}</h1>
+                <p class="where">
+                    {{ property.city ?? city ?? '' }}
+                    @if(property.address ?? address) · {{ property.address ?? address }}@endif
+                    @if(property.phone ?? property_phone) · {{ property.phone ?? property_phone }}@endif
+                </p>
+            </div>
+            <table class="facts">
+                <tr>
+                    <td>
+                        <span class="lbl">ورود</span>
+                        <strong>@if(check_in_label){{ check_in_label | digits }}@else{{ check_in | jdate('Y/m/d') | digits }}@endif</strong>
+                        @if(check_in_time)<span class="lbl">ساعت {{ check_in_time | digits }}</span>@endif
+                    </td>
+                    <td>
+                        <span class="lbl">خروج</span>
+                        <strong>@if(check_out_label){{ check_out_label | digits }}@else{{ check_out | jdate('Y/m/d') | digits }}@endif</strong>
+                        @if(check_out_time)<span class="lbl">ساعت {{ check_out_time | digits }}</span>@endif
+                    </td>
+                    <td><span class="lbl">مدت اقامت</span><strong>@if(nights != null){{ nights | digits }} شب@else —@endif</strong></td>
+                    <td><span class="lbl">تعداد واحد</span><strong>{{ room_count | digits }}</strong>@if(board)<span class="lbl">{{ board }}</span>@endif</td>
+                </tr>
+            </table>
+        </div>
+
+        @if(count(rooms ?? []) > 0)
+        <div class="section">اتاق‌ها و واحدها</div>
+        <table class="data avoid">
+            <thead>
+                <tr>
+                    <th class="num">#</th>
+                    <th>نوع واحد</th>
+                    <th>پذیرایی</th>
+                    <th class="num">بزرگسال</th>
+                    <th class="num">کودک</th>
+                    <th class="num">تخت اضافه</th>
+                    <th>کد تأیید</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($rooms as $room)
+                <tr>
+                    <td class="num">{{ loop.iteration | digits }}</td>
+                    <td>{{ room.name ?? room.room_name ?? room.title ?? room.type ?? 'واحد اقامت' }}@if((room.quantity ?? room.count ?? 0) > 1) × {{ (room.quantity ?? room.count) | digits }}@endif</td>
+                    <td>{{ room.board ?? room.meal ?? room.meal_plan ?? room.board_type ?? board ?? '—' }}</td>
+                    <td class="num">{{ (room.adults ?? room.adult_count ?? '—') | digits }}</td>
+                    <td class="num">{{ (room.children ?? room.child_count ?? '—') | digits }}</td>
+                    <td class="num">{{ (room.extra_beds ?? room.extraBeds ?? '—') | digits }}</td>
+                    <td class="ltr">{{ room.confirmation_code ?? room.confirmationCode ?? '—' }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @endif
+
+        <div class="section">مهمان‌ها</div>
+        <table class="data">
+            <thead>
+                <tr>
+                    <th class="num">#</th>
+                    <th>نام</th>
+                    <th>کد ملی / گذرنامه</th>
+                    <th>نقش</th>
+                    <th>تماس</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(count(guests ?? []) > 0)
+                    @foreach($guests as $guest)
+                    <tr>
+                        <td class="num">{{ loop.iteration | digits }}</td>
+                        <td>{{ guest.name ?? ((guest.first_name ?? guest.firstName ?? '') . ' ' . (guest.last_name ?? guest.lastName ?? '')) }}</td>
+                        <td class="ltr">{{ guest.national_id ?? guest.nationalId ?? guest.code_meli ?? guest.passport ?? guest.passportNumber ?? '—' }}</td>
+                        <td>@if(guest.is_leader || loop.first)سرگروه@else{{ guest.type_label ?? guest.age_type ?? guest.type ?? 'همراه' }}@endif</td>
+                        <td class="ltr">{{ guest.phone ?? guest.mobile ?? guest.cellPhone ?? '—' }}</td>
+                    </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td class="num">{{ 1 | digits }}</td>
+                        <td>{{ guest_name }}</td>
+                        <td>—</td>
+                        <td>سرگروه</td>
+                        <td class="ltr">{{ contact.phone ?? contact_phone ?? '—' }}</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+
+        <div class="section">مبلغ و پرداخت</div>
+        <table class="money avoid">
+            @if((original_price ?? 0) > 0)
+            <tr><td>مبلغ اولیه</td><td class="amt">{{ original_price | number | digits }} {{ currency }}</td></tr>
+            @endif
+            @if((discount ?? 0) > 0)
+            <tr><td>تخفیف</td><td class="amt">{{ discount | number | digits }} {{ currency }}</td></tr>
+            @endif
+            @if((payment.wallet_paid ?? 0) > 0)
+            <tr><td>پرداخت از کیف پول</td><td class="amt">{{ payment.wallet_paid | number | digits }} {{ payment.currency ?? currency }}</td></tr>
+            @endif
+            @if((payment.gateway_amount ?? 0) > 0)
+            <tr><td>پرداخت از درگاه</td><td class="amt">{{ payment.gateway_amount | number | digits }} {{ payment.currency ?? currency }}</td></tr>
+            @endif
+            @if(payment.transaction_id)
+            <tr><td>شماره پیگیری</td><td class="amt">{{ payment.transaction_id }}</td></tr>
+            @endif
+            @if(payment.paid_at_label)
+            <tr><td>زمان پرداخت</td><td class="amt">{{ payment.paid_at_label | digits }}</td></tr>
+            @endif
+            <tr class="grand"><td>مبلغ کل</td><td class="amt">{{ total_price | number | digits }} {{ currency }}</td></tr>
+        </table>
+
+        <table class="contacts">
+            <tr>
+                <td>
+                    <div class="lbl">مهمان اصلی / تماس رزرو</div>
+                    <strong>{{ contact.name ?? guest_name }}</strong>
+                    <div class="ltr">{{ contact.phone ?? contact_phone ?? '—' }}</div>
+                    @if(contact.email ?? contact_email)<div class="ltr">{{ contact.email ?? contact_email }}</div>@endif
+                </td>
+                <td>
+                    <div class="lbl">پشتیبانی آژانس</div>
+                    <strong>{{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }}</strong>
+                    @if(agency_phone)<div class="ltr">{{ agency_phone }}</div>@endif
+                    @if(agency_address)<div>{{ agency_address }}</div>@endif
+                </td>
+            </tr>
+        </table>
+
+        @if(count(rules ?? []) > 0)
+        <div class="rules">
+            <strong>قوانین اقامت</strong>
+            <ul>
+                @foreach($rules as $rule)
+                <li>@if(rule.label){{ rule.label }}: {{ rule.value ?? rule.text ?? rule.description }}@else{{ rule }}@endif</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        @if(notes)
+        <div class="note"><strong>توضیحات: </strong>{{ notes }}</div>
+        @endif
+
+        <div class="sign">
+            <div class="box">مهر و امضای آژانس</div>
+            <div>این واچر بدون مهر آژانس یا کد تأیید، سند قطعی اقامت نیست.</div>
+        </div>
+    </div>
+</body>
+</html>

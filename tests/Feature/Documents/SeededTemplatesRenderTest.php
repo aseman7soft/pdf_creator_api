@@ -7,6 +7,7 @@ namespace Tests\Feature\Documents;
 use App\Models\Template;
 use App\Services\Documents\DocumentGenerationService;
 use App\Services\Templates\TemplateRenderService;
+use App\Services\Templates\TemplateSchemaValidator;
 use Database\Seeders\AssetSeeder;
 use Database\Seeders\TemplateSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -47,7 +48,9 @@ class SeededTemplatesRenderTest extends TestCase
         $this->assertTrue(mb_check_encoding($hotelRendered->html, 'UTF-8'));
         // UTF-8 bytes of «علی» misread as Latin-1 must never appear in output.
         $this->assertStringNotContainsString('Ø¹Ù„ÛŒ', $hotelRendered->html);
-        $this->assertStringContainsString('12,500,000', $hotelRendered->html);
+        $this->assertStringContainsString('واچر هتل', $hotelRendered->html);
+        $this->assertStringContainsString('۱۲٬۵۰۰٬۰۰۰', $hotelRendered->html);
+        $this->assertStringContainsString('<svg', $hotelRendered->html);
         $this->assertStringNotContainsString('asset://', $hotelRendered->html);
         $this->assertArrayHasKey('vazirmatn-regular.woff2', $hotelRendered->assets);
         $this->assertArrayHasKey('vazirmatn-bold.woff2', $hotelRendered->assets);
@@ -103,6 +106,123 @@ class SeededTemplatesRenderTest extends TestCase
 
             return true;
         });
+    }
+
+    public function test_accommodation_and_flight_samples_render_repeated_rows(): void
+    {
+        $renderer = $this->app->make(TemplateRenderService::class);
+        $validator = $this->app->make(TemplateSchemaValidator::class);
+
+        $accommodation = Template::query()->where('slug', 'accommodation-voucher')->firstOrFail();
+        $legacy = Template::query()->where('slug', 'hotel-voucher')->firstOrFail();
+        $flight = Template::query()->where('slug', 'flight-ticket')->firstOrFail();
+
+        $hotel = $this->sample('accommodation-hotel.json');
+        $hotelHtml = $renderer->render($accommodation, $validator->validate($accommodation, $hotel))->html;
+        $this->assertStringContainsString('واچر هتل', $hotelHtml);
+        $this->assertStringContainsString('هتل اسپیناس پالاس', $hotelHtml);
+        $this->assertStringContainsString('اتاق توئین', $hotelHtml);
+        $this->assertStringContainsString('کیان رضایی', $hotelHtml);
+        $this->assertStringContainsString('SNP-993311', $hotelHtml);
+        $this->assertStringContainsString('۱۸٬۰۰۰٬۰۰۰', $hotelHtml);
+        $this->assertStringContainsString('<svg', $hotelHtml);
+        $this->assertStringNotContainsString('asset://', $hotelHtml);
+
+        $legacyHtml = $renderer->render($legacy, $validator->validate($legacy, $this->hotelData()))->html;
+        $this->assertStringContainsString('واچر هتل', $legacyHtml);
+        $this->assertStringContainsString('هتل پارسیان', $legacyHtml);
+        $this->assertStringContainsString('BK-100', $legacyHtml);
+
+        $villa = $this->sample('accommodation-villa.json');
+        $villaHtml = $renderer->render($accommodation, $validator->validate($accommodation, $villa))->html;
+        $this->assertStringContainsString('واچر ویلا', $villaHtml);
+        $this->assertStringContainsString('ویلای ساحلی نخل', $villaHtml);
+        $this->assertStringContainsString('سارا محمدی', $villaHtml);
+        $this->assertStringNotContainsString('واچر هتل', $villaHtml);
+
+        $residence = $this->sample('accommodation-residence.json');
+        $residenceHtml = $renderer->render($accommodation, $validator->validate($accommodation, $residence))->html;
+        $this->assertStringContainsString('واچر اقامتگاه', $residenceHtml);
+        $this->assertStringContainsString('نقش‌جهان', $residenceHtml);
+
+        $oneWay = $this->sample('flight-one-way.json');
+        $oneWayHtml = $renderer->render($flight, $validator->validate($flight, $oneWay))->html;
+        $this->assertStringContainsString('بلیط هواپیما', $oneWayHtml);
+        $this->assertStringContainsString('یک‌طرفه', $oneWayHtml);
+        $this->assertStringContainsString('KIS7H2', $oneWayHtml);
+        $this->assertStringContainsString('Y9 712', $oneWayHtml);
+        $this->assertStringContainsString('نگار احمدی', $oneWayHtml);
+        $this->assertStringContainsString('آرمین احمدی', $oneWayHtml);
+        $this->assertStringContainsString('کیش', $oneWayHtml);
+        $this->assertStringContainsString('<svg', $oneWayHtml);
+
+        $round = $this->sample('flight-round-trip.json');
+        $roundHtml = $renderer->render($flight, $validator->validate($flight, $round))->html;
+        $this->assertStringContainsString('رفت و برگشت', $roundHtml);
+        $this->assertStringContainsString('آنکارا', $roundHtml);
+        $this->assertStringContainsString('استانبول', $roundHtml);
+        $this->assertStringContainsString('W5 073', $roundHtml);
+        $this->assertStringContainsString('نیا کاظمی', $roundHtml);
+        $this->assertStringContainsString('برگشت', $roundHtml);
+        $this->assertStringContainsString('۱۸٬۶۵۰٬۰۰۰', $roundHtml);
+
+        $snapshot = [
+            'pnr' => 'SYZ1',
+            'status' => 'issued',
+            'trip_type' => 'one_way',
+            'passengers' => [
+                ['firstName' => 'رضا', 'lastName' => 'نعمتی', 'nationalId' => '123', 'passengerType' => 'ADT'],
+            ],
+            'segments' => [],
+            'route_snapshot' => [
+                'summary' => 'شیراز به مشهد',
+                'criteria' => ['tripType' => 'one_way', 'origin' => 'SYZ', 'destination' => 'MHD'],
+                'card' => [
+                    'airlineLabel' => 'ماهان',
+                    'cabinClassLabel' => 'اکونومی',
+                    'fareTypeLabel' => 'سیستمی',
+                    'baggage' => '20 KG',
+                    'sellTotal' => 2500000,
+                    'legs' => [[
+                        'origin' => 'SYZ',
+                        'destination' => 'MHD',
+                        'originCityLabel' => 'شیراز',
+                        'destinationCityLabel' => 'مشهد',
+                        'departureTime' => '07:00',
+                        'arrivalTime' => '08:20',
+                        'departureDateLabel' => '۱ دی ۱۴۰۵',
+                        'flightNumber' => 'W5 100',
+                        'airlineLabel' => 'ماهان',
+                        'cabinClassLabel' => 'اکونومی',
+                        'baggage' => '20 KG',
+                        'durationLabel' => '۱ ساعت و ۲۰ دقیقه',
+                        'optionIndex' => 0,
+                    ]],
+                    'priceBreakdown' => [
+                        ['label' => 'بزرگسال', 'passengerType' => 'ADT', 'quantity' => 1, 'totalFare' => 2500000],
+                    ],
+                ],
+            ],
+            'currency' => 'تومان',
+        ];
+        $snapshotHtml = $renderer->render($flight, $validator->validate($flight, $snapshot))->html;
+        $this->assertStringContainsString('شیراز', $snapshotHtml);
+        $this->assertStringContainsString('مشهد', $snapshotHtml);
+        $this->assertStringContainsString('W5 100', $snapshotHtml);
+        $this->assertStringContainsString('رضا نعمتی', $snapshotHtml);
+        $this->assertStringContainsString('۲٬۵۰۰٬۰۰۰', $snapshotHtml);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function sample(string $filename): array
+    {
+        $decoded = json_decode((string) file_get_contents(resource_path('templates/samples/'.$filename)), true);
+
+        $this->assertIsArray($decoded);
+
+        return $decoded;
     }
 
     /**

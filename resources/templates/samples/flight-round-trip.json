@@ -1,0 +1,128 @@
+{
+  "pnr": "IST4R9",
+  "hub_public_id": "fl_77cd",
+  "tracking_code": "TRK-88002",
+  "re_code": "R-57088",
+  "supplier_code": "flight_hub",
+  "invoice_number": "INV-1405-3188",
+  "status": "issued",
+  "trip_type": "round_trip",
+  "summary": "تهران به استانبول و برگشت",
+  "cabin_class": "اکونومی",
+  "fare_type": "چارتر",
+  "issued_at": "2026-11-20",
+  "issued_at_label": "۲۹ آبان ۱۴۰۵",
+  "contact_name": "مهدی کاظمی",
+  "contact_phone": "09123334455",
+  "contact_email": "mehdi@example.com",
+  "passengers": [
+    {
+      "first_name": "مهدی",
+      "last_name": "کاظمی",
+      "national_id": "0011223344",
+      "type": "ADT",
+      "ticket_number": "537-4412001001"
+    },
+    {
+      "first_name": "الهام",
+      "last_name": "کاظمی",
+      "passport": "P4412981",
+      "type": "ADT",
+      "ticket_number": "537-4412001002"
+    },
+    {
+      "first_name": "نیا",
+      "last_name": "کاظمی",
+      "national_id": "0099001122",
+      "type": "INF",
+      "ticket_number": "537-4412001003"
+    }
+  ],
+  "reservation_flight_segments": [
+    {
+      "direction": "outbound",
+      "position": 1,
+      "from_city_name": "تهران",
+      "to_city_name": "آنکارا",
+      "from_code": "IKA",
+      "to_code": "ESB",
+      "depart_date": "2026-12-02",
+      "depart_date_label": "۱۱ آذر ۱۴۰۵",
+      "depart_time": "02:40",
+      "arrival_date_label": "۱۱ آذر ۱۴۰۵",
+      "arrival_time": "05:10",
+      "airline": "ماهان",
+      "flight_number": "W5 072",
+      "cabin_class": "اکونومی",
+      "booking_class": "Q",
+      "baggage": "۳۰ کیلوگرم",
+      "terminal": "2",
+      "arrival_terminal": "خارجی",
+      "duration": "۳ ساعت و ۳۰ دقیقه",
+      "equipment": "Airbus A340"
+    },
+    {
+      "direction": "outbound",
+      "position": 2,
+      "from_city_name": "آنکارا",
+      "to_city_name": "استانبول",
+      "from_code": "ESB",
+      "to_code": "IST",
+      "depart_date": "2026-12-02",
+      "depart_date_label": "۱۱ آذر ۱۴۰۵",
+      "depart_time": "08:20",
+      "arrival_time": "09:25",
+      "arrival_date_label": "۱۱ آذر ۱۴۰۵",
+      "airline": "ترکیش",
+      "flight_number": "TK 2134",
+      "cabin_class": "اکونومی",
+      "booking_class": "L",
+      "baggage": "۳۰ کیلوگرم",
+      "terminal": "داخلی",
+      "arrival_terminal": "بین‌الملل",
+      "duration": "۱ ساعت و ۵ دقیقه"
+    },
+    {
+      "direction": "return",
+      "position": 1,
+      "from_city_name": "استانبول",
+      "to_city_name": "تهران",
+      "from_code": "IST",
+      "to_code": "IKA",
+      "depart_date": "2026-12-09",
+      "depart_date_label": "۱۸ آذر ۱۴۰۵",
+      "depart_time": "23:50",
+      "arrival_date_label": "۱۹ آذر ۱۴۰۵",
+      "arrival_time": "03:20",
+      "airline": "ماهان",
+      "flight_number": "W5 073",
+      "cabin_class": "اکونومی",
+      "booking_class": "Q",
+      "baggage": "۳۰ کیلوگرم",
+      "terminal": "بین‌الملل",
+      "arrival_terminal": "2",
+      "duration": "۳ ساعت و ۳۰ دقیقه"
+    }
+  ],
+  "fare_breakdown": [
+    {"label": "بزرگسال", "passengerType": "ADT", "quantity": 2, "base_fare": 14500000, "tax": 2100000, "total": 16600000},
+    {"label": "نوزاد", "passenger_type": "INF", "quantity": 1, "base_fare": 1800000, "tax": 250000, "total": 2050000}
+  ],
+  "base_fare": 16300000,
+  "tax": 2350000,
+  "sell_price": 18650000,
+  "total_price": 18650000,
+  "currency": "تومان",
+  "payment": {
+    "gateway_amount": 18650000,
+    "transaction_id": "1029384756"
+  },
+  "rules": [
+    "توقف در آنکارا حدود ۳ ساعت است و بار تا مقصد نهایی چک می‌شود.",
+    "نوزاد صندلی جداگانه ندارد."
+  ],
+  "cancellation_policies": [
+    {"description": "کنسلی تا ۲۴ ساعت قبل از پرواز رفت.", "adultPenaltyPercentage": 30, "infantPenaltyPercentage": 10}
+  ],
+  "agency_name": "آژانس مسافرتی آسمان هفتم"
+}

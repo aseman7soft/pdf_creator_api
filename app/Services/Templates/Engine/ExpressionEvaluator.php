@@ -6,6 +6,7 @@ namespace App\Services\Templates\Engine;
 
 use App\Exceptions\TemplateRenderException;
 use App\Support\Jalali;
+use App\Support\QrCode;
 use DateTimeInterface;
 use Illuminate\Support\Carbon;
 
@@ -67,6 +68,8 @@ final class ExpressionEvaluator
                     ? ($arguments[0] ?? '')
                     : $value,
                 'number' => $this->formatNumber($value),
+                'digits' => $this->persianDigits($value),
+                'qr' => QrCode::svg($this->stringify($value)),
                 'jdate' => Jalali::format(
                     $this->toDateValue($value),
                     isset($arguments[0]) && is_string($arguments[0]) ? $arguments[0] : 'Y/m/d',
@@ -84,9 +87,7 @@ final class ExpressionEvaluator
                 default => throw new TemplateRenderException('فیلتر قالب پشتیبانی نمی‌شود.'),
             };
 
-            if ($filter['name'] === 'nl2br') {
-                $safe = true;
-            }
+            $safe = in_array($filter['name'], ['nl2br', 'qr'], true);
         }
 
         return ['value' => $this->stringify($value), 'safe' => $safe];
@@ -400,6 +401,11 @@ final class ExpressionEvaluator
         $decimals = (is_finite($number) && floor($number) === $number) ? 0 : 2;
 
         return number_format($number, $decimals, '.', ',');
+    }
+
+    private function persianDigits(mixed $value): string
+    {
+        return strtr(Jalali::digits($this->stringify($value)), [',' => '٬']);
     }
 
     private function truncate(mixed $value, mixed $limit): string

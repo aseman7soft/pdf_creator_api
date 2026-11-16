@@ -1,0 +1,27 @@
+{
+  "accommodation_type": "residence",
+  "accommodation_type_label": "اقامتگاه",
+  "guest_name": "حسین کریمی",
+  "hotel_name": "اقامتگاه سنتی نقش‌جهان",
+  "booking_reference": "AH-RES-1405-4410",
+  "status": "confirmed",
+  "check_in": "2026-12-10",
+  "check_out": "2026-12-12",
+  "check_in_label": "۱۹ آذر ۱۴۰۵",
+  "check_out_label": "۲۱ آذر ۱۴۰۵",
+  "nights": 2,
+  "room_count": 1,
+  "board": "صبحانه بومی",
+  "city": "کاشان",
+  "address": "محله سلطان امیر احمد",
+  "rooms": [
+    {"title": "اتاق شاه‌نشین", "board": "صبحانه بومی", "adults": 2, "children": 0, "extra_beds": 0}
+  ],
+  "guests": [
+    {"first_name": "حسین", "last_name": "کریمی", "national_id": "1234567890"}
+  ],
+  "total_price": 6400000,
+  "currency": "تومان",
+  "notes": "اقامتگاه پارکینگ اختصاصی ندارد.",
+  "agency_name": "آژانس مسافرتی آسمان هفتم"
+}

@@ -13,9 +13,9 @@ use App\Services\Templates\Engine\TemplateParser;
  * Safe, Blade-like template renderer with zero PHP execution.
  *
  * Syntax (docs/CONTRACTS.md §4):
- *   {{ expression | filter }}   escaped output; filters: number, jdate,
- *                               jdatetime, upper, lower, trim, nl2br,
- *                               default('x'), truncate(80), json
+ *   {{ expression | filter }}   escaped output; filters: number, digits,
+ *                               qr, jdate, jdatetime, upper, lower, trim,
+ *                               nl2br, default('x'), truncate(80), json
  *
  *   @if/@elseif/@else/@endif, @unless/@endunless, @isset/@endisset,
  *
