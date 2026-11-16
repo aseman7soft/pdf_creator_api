@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>بلیط هواپیما</title>
+    <style>
+        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-regular') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-bold') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Vazirmatn', Tahoma, sans-serif; direction: rtl; margin: 0; color: #1b2430; font-size: 12px; line-height: 1.65; }
+        .stripe { height: 6px; background: linear-gradient(90deg, #e2231a 0 18%, #12356b 18% 100%); }
+        .page { padding: 4mm 4mm 2mm; }
+        .header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 0 8px; }
+        .brand { display: flex; align-items: center; gap: 8px; max-width: 68%; }
+        .brand img { height: 36px; width: auto; max-width: 150px; object-fit: contain; }
+        .brand .name { font-weight: 700; font-size: 15px; color: #12356b; }
+        .brand .sub { display: block; font-size: 10px; color: #5e6b7a; font-weight: 400; }
+        .doc-kicker { font-size: 11px; color: #e2231a; font-weight: 700; }
+        .doc-title { margin: 0; font-size: 22px; color: #12356b; }
+        .status { display: inline-block; margin-top: 4px; background: #e7f0ff; color: #12356b; border-radius: 999px; padding: 2px 10px; font-size: 11px; font-weight: 700; }
+        .top { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 10px; }
+        .top td { vertical-align: middle; }
+        .pnr-card { background: #12356b; color: #fff; border-radius: 14px; padding: 10px 14px; }
+        .pnr-card .lbl { font-size: 10px; opacity: .8; }
+        .pnr { font-size: 26px; font-weight: 700; letter-spacing: 1px; direction: ltr; text-align: right; }
+        .chips span { display: inline-block; background: rgba(255,255,255,.14); border-radius: 999px; padding: 1px 8px; font-size: 11px; margin-left: 4px; }
+        .codes { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .codes td { width: 25%; padding: 2px 8px 2px 0; }
+        .codes .lbl { display: block; color: #5e6b7a; font-size: 10px; }
+        .codes .val { font-weight: 700; color: #12356b; }
+        .qr { width: 118px; text-align: center; }
+        .qr svg { width: 96px; height: 96px; }
+        .qr .code { font-size: 10px; font-weight: 700; color: #12356b; direction: ltr; }
+        .summary { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: #12356b; }
+        .leg { border: 1px solid #d5deea; border-radius: 14px; margin-bottom: 8px; page-break-inside: avoid; overflow: hidden; }
+        .leg-head { display: flex; justify-content: space-between; align-items: center; background: #f5f7fb; padding: 6px 12px; border-bottom: 1px dashed #c5d0de; }
+        .dir { background: #e2231a; color: #fff; border-radius: 999px; padding: 1px 8px; font-size: 10px; font-weight: 700; }
+        .airline { font-weight: 700; color: #12356b; }
+        .route { width: 100%; border-collapse: collapse; }
+        .route td { padding: 8px 12px; vertical-align: top; text-align: right; }
+        .when { font-size: 20px; font-weight: 700; color: #12356b; line-height: 1.2; }
+        .city { font-weight: 700; }
+        .code { direction: ltr; unicode-bidi: isolate; display: inline-block; color: #5e6b7a; font-size: 11px; }
+        .arrow { text-align: center; color: #e2231a; font-size: 18px; width: 28px; padding-top: 10px; }
+        .meta-line { padding: 0 12px 8px; color: #3d4b5c; font-size: 11px; }
+        .meta-line span { display: inline-block; background: #f5f7fb; border-radius: 8px; padding: 2px 8px; margin: 2px 0 2px 4px; }
+        .section { margin: 12px 0 6px; font-size: 13px; font-weight: 700; color: #12356b; border-right: 4px solid #e2231a; padding-right: 8px; }
+        table.data { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        table.data th, table.data td { border: 1px solid #e3e8ef; padding: 6px 8px; text-align: right; vertical-align: top; }
+        table.data th { background: #f5f7fb; color: #12356b; font-size: 11px; }
+        table.data td.num, table.data th.num { text-align: center; }
+        .ltr { direction: ltr; unicode-bidi: isolate; text-align: left; }
+        .money { width: 100%; border-collapse: collapse; }
+        .money td { padding: 5px 8px; border-bottom: 1px solid #eef2f6; }
+        .money td.amt { text-align: left; direction: ltr; font-weight: 700; color: #12356b; }
+        .money tr.grand td { background: #12356b; color: #fff; font-weight: 700; font-size: 14px; border: 0; }
+        .money tr.grand td.amt { color: #fff; }
+        .note, .rules { border-radius: 10px; padding: 8px 12px; font-size: 11px; margin-top: 8px; page-break-inside: avoid; }
+        .money { page-break-inside: avoid; }
+        .note { background: #fff8eb; border: 1px dashed #e0b15a; }
+        .rules { background: #f7f9fc; border: 1px solid #e3e8ef; }
+        .rules li { margin: 0 16px 2px 0; }
+        .foot-note { margin-top: 12px; font-size: 10px; color: #5e6b7a; }
+        .empty { color: #5e6b7a; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <div class="stripe"></div>
+    <div class="page">
+        <div class="header">
+            <div class="brand">
+                <img src="asset://aseman-haftom-logo" alt="آسمان هفتم">
+                <div>
+                    <span class="name">{{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }}</span>
+                    <span class="sub">بلیط الکترونیک مسافر · همراه داشتن مدرک شناسایی الزامی است</span>
+                </div>
+            </div>
+            <div>
+                <div class="doc-kicker">سند پرواز</div>
+                <h2 class="doc-title">بلیط هواپیما</h2>
+                <div class="status">@if(status_label){{ status_label }}@elseif(status == 'issued')صادرشده@elseif(status == 'booked' || status == 'pending_payment')در انتظار صدور@elseif(status == 'failed')ناموفق@elseif(status == 'cancel_pending')درخواست کنسلی@elseif(status){{ status }}@else صادر شده@endif</div>
+            </div>
+        </div>
+
+        <table class="top">
+            <tr>
+                <td>
+                    <div class="pnr-card">
+                        <div class="lbl">کد رزرو / PNR</div>
+                        <div class="pnr">{{ pnr }}</div>
+                        <div class="chips">
+                            <span>@if(trip_type == 'round_trip' || trip_type == 'return' || trip_type == 'roundtrip' || route_snapshot.criteria.tripType == 'round_trip' || route_snapshot.criteria.tripType == 'return')رفت و برگشت@else یک‌طرفه@endif</span>
+                            @if(cabin_class ?? route_snapshot.card.cabinClassLabel)<span>{{ cabin_class ?? route_snapshot.card.cabinClassLabel }}</span>@endif
+                            @if(fare_type ?? route_snapshot.card.fareTypeLabel)<span>{{ fare_type ?? route_snapshot.card.fareTypeLabel }}</span>@endif
+                        </div>
+                    </div>
+                    <table class="codes">
+                        <tr>
+                            <td><span class="lbl">شماره بلیط</span><span class="val ltr">{{ ticket_number ?? '—' }}</span></td>
+                            <td><span class="lbl">کد پیگیری</span><span class="val ltr">{{ tracking_code ?? '—' }}</span></td>
+                            <td><span class="lbl">شناسه رزرو</span><span class="val ltr">{{ hub_public_id ?? re_code ?? '—' }}</span></td>
+                            <td><span class="lbl">تاریخ صدور</span><span class="val">@if(issued_at_label){{ issued_at_label | digits }}@elseif(issued_at){{ issued_at | jdate('Y/m/d') | digits }}@else{{ now() | jdate('Y/m/d') | digits }}@endif</span></td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="qr">
+                    {{ (ticket_number ?? pnr) | qr }}
+                    <div class="code">{{ ticket_number ?? pnr }}</div>
+                </td>
+            </tr>
+        </table>
+
+        @if(summary ?? route_snapshot.summary)
+        <p class="summary">{{ summary ?? route_snapshot.summary }}</p>
+        @endif
+
+        <div class="section">مسیر پرواز</div>
+
+        @if(count(segments ?? []) > 0)
+            @foreach($segments as $segment)
+            {{-- segment card --}}
+            <div class="leg">
+                <div class="leg-head">
+                    <span class="dir">@if(segment.direction == 'return' || segment.direction == 'inbound' || segment.direction == 'برگشت')برگشت@elseif(segment.direction == 'outbound' || segment.direction == 'رفت')رفت@elseif(segment.optionIndex == 1)برگشت@else مسیر {{ loop.iteration | digits }}@endif</span>
+                    <span class="airline">{{ segment.airline ?? segment.airlineLabel ?? segment.marketingAirlineCode ?? airline ?? 'ایرلاین' }}@if(segment.flight_number ?? segment.flightNumber) · <span class="ltr">{{ segment.flight_number ?? segment.flightNumber }}</span>@endif</span>
+                </div>
+                <table class="route">
+                    <tr>
+                        <td>
+                            <div class="when">{{ (segment.depart_time ?? segment.departureTime ?? '—') | digits }}</div>
+                            <div class="city">{{ segment.from_city_name ?? segment.originCityLabel ?? segment.originLabel ?? segment.origin ?? '—' }}</div>
+                            <div class="code">{{ segment.from_code ?? segment.origin ?? '' }}</div>
+                            <div>{{ (segment.depart_date_label ?? segment.departureDateLabel ?? '') | digits }}@if((segment.depart_date_label ?? segment.departureDateLabel) == null && (segment.depart_date ?? segment.departureDateTime)){{ (segment.depart_date ?? segment.departureDateTime) | jdate('Y/m/d') | digits }}@endif</div>
+                        </td>
+                        <td class="arrow">←</td>
+                        <td>
+                            <div class="when">{{ (segment.arrival_time ?? segment.arrivalTime ?? '—') | digits }}</div>
+                            <div class="city">{{ segment.to_city_name ?? segment.destinationCityLabel ?? segment.destinationLabel ?? segment.destination ?? '—' }}</div>
+                            <div class="code">{{ segment.to_code ?? segment.destination ?? '' }}</div>
+                            <div>{{ (segment.arrival_date_label ?? segment.arrivalDateLabel ?? '') | digits }}@if((segment.arrival_date_label ?? segment.arrivalDateLabel) == null && segment.arrivalDateTime){{ segment.arrivalDateTime | jdate('Y/m/d') | digits }}@endif</div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="meta-line">
+                    @if(segment.cabin_class ?? segment.cabinClassLabel ?? cabin_class)<span>کلاس {{ segment.cabin_class ?? segment.cabinClassLabel ?? cabin_class }}</span>@endif
+                    @if(segment.booking_class ?? segment.resBookDesigCode)<span>نرخ <b class="ltr">{{ segment.booking_class ?? segment.resBookDesigCode }}</b></span>@endif
+                    @if(segment.baggage ?? baggage)<span>بار {{ segment.baggage ?? baggage }}</span>@endif
+                    @if(segment.terminal ?? segment.departure_terminal)<span>ترمینال حرکت {{ (segment.terminal ?? segment.departure_terminal) | digits }}</span>@endif
+                    @if(segment.arrival_terminal)<span>ترمینال ورود {{ segment.arrival_terminal | digits }}</span>@endif
+                    @if(segment.duration ?? segment.durationLabel)<span>{{ segment.duration ?? segment.durationLabel }}</span>@endif
+                    @if(segment.equipment)<span>{{ segment.equipment }}</span>@endif
+                </div>
+            </div>
+            @endforeach
+        @elseif(count(reservation_flight_segments ?? []) > 0)
+            @foreach($reservation_flight_segments as $segment)
+            <div class="leg">
+                <div class="leg-head">
+                    <span class="dir">@if(segment.direction == 'return' || segment.direction == 'inbound' || segment.direction == 'برگشت')برگشت@elseif(segment.direction == 'outbound' || segment.direction == 'رفت')رفت@elseif(segment.optionIndex == 1)برگشت@else مسیر {{ loop.iteration | digits }}@endif</span>
+                    <span class="airline">{{ segment.airline ?? segment.airlineLabel ?? segment.marketingAirlineCode ?? airline ?? 'ایرلاین' }}@if(segment.flight_number ?? segment.flightNumber) · <span class="ltr">{{ segment.flight_number ?? segment.flightNumber }}</span>@endif</span>
+                </div>
+                <table class="route">
+                    <tr>
+                        <td>
+                            <div class="when">{{ (segment.depart_time ?? segment.departureTime ?? '—') | digits }}</div>
+                            <div class="city">{{ segment.from_city_name ?? segment.originCityLabel ?? segment.originLabel ?? segment.origin ?? '—' }}</div>
+                            <div class="code">{{ segment.from_code ?? segment.origin ?? '' }}</div>
+                            <div>{{ (segment.depart_date_label ?? segment.departureDateLabel ?? '') | digits }}@if((segment.depart_date_label ?? segment.departureDateLabel) == null && (segment.depart_date ?? segment.departureDateTime)){{ (segment.depart_date ?? segment.departureDateTime) | jdate('Y/m/d') | digits }}@endif</div>
+                        </td>
+                        <td class="arrow">←</td>
+                        <td>
+                            <div class="when">{{ (segment.arrival_time ?? segment.arrivalTime ?? '—') | digits }}</div>
+                            <div class="city">{{ segment.to_city_name ?? segment.destinationCityLabel ?? segment.destinationLabel ?? segment.destination ?? '—' }}</div>
+                            <div class="code">{{ segment.to_code ?? segment.destination ?? '' }}</div>
+                            <div>{{ (segment.arrival_date_label ?? segment.arrivalDateLabel ?? '') | digits }}@if((segment.arrival_date_label ?? segment.arrivalDateLabel) == null && segment.arrivalDateTime){{ segment.arrivalDateTime | jdate('Y/m/d') | digits }}@endif</div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="meta-line">
+                    @if(segment.cabin_class ?? segment.cabinClassLabel ?? cabin_class)<span>کلاس {{ segment.cabin_class ?? segment.cabinClassLabel ?? cabin_class }}</span>@endif
+                    @if(segment.booking_class ?? segment.resBookDesigCode)<span>نرخ <b class="ltr">{{ segment.booking_class ?? segment.resBookDesigCode }}</b></span>@endif
+                    @if(segment.baggage ?? baggage)<span>بار {{ segment.baggage ?? baggage }}</span>@endif
+                    @if(segment.terminal ?? segment.departure_terminal)<span>ترمینال حرکت {{ (segment.terminal ?? segment.departure_terminal) | digits }}</span>@endif
+                    @if(segment.arrival_terminal)<span>ترمینال ورود {{ segment.arrival_terminal | digits }}</span>@endif
+                    @if(segment.duration ?? segment.durationLabel)<span>{{ segment.duration ?? segment.durationLabel }}</span>@endif
+                    @if(segment.equipment)<span>{{ segment.equipment }}</span>@endif
+                </div>
+            </div>
+            @endforeach
+        @elseif(count(route_snapshot.card.legs ?? []) > 0)
+            @foreach(route_snapshot.card.legs as $segment)
+            <div class="leg">
+                <div class="leg-head">
+                    <span class="dir">@if(segment.direction == 'return' || segment.direction == 'inbound' || segment.direction == 'برگشت')برگشت@elseif(segment.direction == 'outbound' || segment.direction == 'رفت')رفت@elseif(segment.optionIndex == 1)برگشت@else مسیر {{ loop.iteration | digits }}@endif</span>
+                    <span class="airline">{{ segment.airline ?? segment.airlineLabel ?? segment.marketingAirlineCode ?? airline ?? 'ایرلاین' }}@if(segment.flight_number ?? segment.flightNumber) · <span class="ltr">{{ segment.flight_number ?? segment.flightNumber }}</span>@endif</span>
+                </div>
+                <table class="route">
+                    <tr>
+                        <td>
+                            <div class="when">{{ (segment.depart_time ?? segment.departureTime ?? '—') | digits }}</div>
+                            <div class="city">{{ segment.from_city_name ?? segment.originCityLabel ?? segment.originLabel ?? segment.origin ?? '—' }}</div>
+                            <div class="code">{{ segment.from_code ?? segment.origin ?? '' }}</div>
+                            <div>{{ (segment.depart_date_label ?? segment.departureDateLabel ?? '') | digits }}@if((segment.depart_date_label ?? segment.departureDateLabel) == null && (segment.depart_date ?? segment.departureDateTime)){{ (segment.depart_date ?? segment.departureDateTime) | jdate('Y/m/d') | digits }}@endif</div>
+                        </td>
+                        <td class="arrow">←</td>
+                        <td>
+                            <div class="when">{{ (segment.arrival_time ?? segment.arrivalTime ?? '—') | digits }}</div>
+                            <div class="city">{{ segment.to_city_name ?? segment.destinationCityLabel ?? segment.destinationLabel ?? segment.destination ?? '—' }}</div>
+                            <div class="code">{{ segment.to_code ?? segment.destination ?? '' }}</div>
+                            <div>{{ (segment.arrival_date_label ?? segment.arrivalDateLabel ?? '') | digits }}@if((segment.arrival_date_label ?? segment.arrivalDateLabel) == null && segment.arrivalDateTime){{ segment.arrivalDateTime | jdate('Y/m/d') | digits }}@endif</div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="meta-line">
+                    @if(segment.cabin_class ?? segment.cabinClassLabel ?? cabin_class)<span>کلاس {{ segment.cabin_class ?? segment.cabinClassLabel ?? cabin_class }}</span>@endif
+                    @if(segment.booking_class ?? segment.resBookDesigCode)<span>نرخ <b class="ltr">{{ segment.booking_class ?? segment.resBookDesigCode }}</b></span>@endif
+                    @if(segment.baggage ?? baggage)<span>بار {{ segment.baggage ?? baggage }}</span>@endif
+                    @if(segment.terminal ?? segment.departure_terminal)<span>ترمینال حرکت {{ (segment.terminal ?? segment.departure_terminal) | digits }}</span>@endif
+                    @if(segment.arrival_terminal)<span>ترمینال ورود {{ segment.arrival_terminal | digits }}</span>@endif
+                    @if(segment.duration ?? segment.durationLabel)<span>{{ segment.duration ?? segment.durationLabel }}</span>@endif
+                    @if(segment.equipment)<span>{{ segment.equipment }}</span>@endif
+                </div>
+            </div>
+            @endforeach
+        @else
+            <p class="empty">جزئیات مسیر در این درخواست ارسال نشده است.</p>
+        @endif
+
+        <div class="section">مسافران</div>
+        @if(count(passengers ?? []) > 0)
+        <table class="data">
+            <thead>
+                <tr>
+                    <th class="num">#</th>
+                    <th>نام</th>
+                    <th>نوع</th>
+                    <th>مدرک</th>
+                    <th>شماره بلیط</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($passengers as $passenger)
+                <tr>
+                    <td class="num">{{ loop.iteration | digits }}</td>
+                    <td>{{ passenger.name ?? ((passenger.first_name ?? passenger.firstName ?? '') . ' ' . (passenger.last_name ?? passenger.lastName ?? '')) }}</td>
+                    <td>@if(passenger.type_label){{ passenger.type_label }}@elseif(passenger.type == 'ADT' || passenger.type == 'adult' || passenger.passengerType == 'ADT' || passenger.passenger_type == 'ADT')بزرگسال@elseif(passenger.type == 'CHD' || passenger.type == 'child' || passenger.passengerType == 'CHD' || passenger.passenger_type == 'CHD')کودک@elseif(passenger.type == 'INF' || passenger.type == 'infant' || passenger.passengerType == 'INF' || passenger.passenger_type == 'INF')نوزاد@else{{ passenger.type ?? passenger.passengerType ?? passenger.passenger_type ?? '—' }}@endif</td>
+                    <td class="ltr">{{ passenger.national_id ?? passenger.nationalId ?? passenger.code_meli ?? passenger.passport ?? passenger.passportNumber ?? passenger.passport_number ?? '—' }}</td>
+                    <td class="ltr">{{ passenger.ticket_number ?? passenger.ticketNumber ?? ticket_number ?? '—' }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @else
+        <p class="empty">فهرست مسافران ارسال نشده است.</p>
+        @endif
+
+        <div class="section">نرخ و پرداخت</div>
+        @if(count(fare_breakdown ?? []) > 0 || count(price_breakdown ?? []) > 0)
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>مسافر</th>
+                    <th class="num">تعداد</th>
+                    <th class="num">قیمت پایه</th>
+                    <th class="num">مالیات</th>
+                    <th class="num">جمع</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(fare_breakdown ?? price_breakdown ?? [] as $row)
+                <tr>
+                    <td>{{ row.label ?? row.passenger_type ?? row.passengerType ?? 'مسافر' }}</td>
+                    <td class="num">{{ (row.quantity ?? '—') | digits }}</td>
+                    <td class="num">@if(row.base_fare != null){{ row.base_fare | number | digits }}@else —@endif</td>
+                    <td class="num">@if(row.tax != null){{ row.tax | number | digits }}@else —@endif</td>
+                    <td class="num">{{ (row.total ?? row.totalFare ?? 0) | number | digits }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @endif
+
+        <table class="money">
+            @if((base_fare ?? 0) > 0)<tr><td>قیمت پایه</td><td class="amt">{{ base_fare | number | digits }} {{ currency ?? 'تومان' }}</td></tr>@endif
+            @if((tax ?? 0) > 0)<tr><td>مالیات و عوارض</td><td class="amt">{{ tax | number | digits }} {{ currency ?? 'تومان' }}</td></tr>@endif
+            @if((discount ?? 0) > 0)<tr><td>تخفیف</td><td class="amt">{{ discount | number | digits }} {{ currency ?? 'تومان' }}</td></tr>@endif
+            @if((payment.wallet_paid ?? 0) > 0)<tr><td>کیف پول</td><td class="amt">{{ payment.wallet_paid | number | digits }} {{ payment.currency ?? currency ?? 'تومان' }}</td></tr>@endif
+            @if((payment.gateway_amount ?? 0) > 0)<tr><td>درگاه</td><td class="amt">{{ payment.gateway_amount | number | digits }} {{ payment.currency ?? currency ?? 'تومان' }}</td></tr>@endif
+            @if(payment.transaction_id)<tr><td>پیگیری پرداخت</td><td class="amt">{{ payment.transaction_id }}</td></tr>@endif
+            @if(invoice_number)<tr><td>شماره فاکتور</td><td class="amt">{{ invoice_number }}</td></tr>@endif
+            <tr class="grand"><td>مبلغ کل</td><td class="amt">{{ (total_price ?? sell_price ?? route_snapshot.card.sellTotal ?? 0) | number | digits }} {{ currency ?? 'تومان' }}</td></tr>
+        </table>
+
+        @if(contact_name ?? contact_phone ?? contact_email)
+        <div class="section">تماس رزرو</div>
+        <p>{{ contact_name ?? '' }} <span class="ltr">{{ contact_phone ?? '' }}</span> <span class="ltr">{{ contact_email ?? '' }}</span></p>
+        @endif
+
+        @if(count(rules ?? []) > 0 || count(cancellation_policies ?? []) > 0)
+        <div class="rules">
+            <strong>قوانین نرخ و کنسلی</strong>
+            <ul>
+                @foreach(rules ?? [] as $rule)
+                <li>@if(rule.label){{ rule.label }}: {{ rule.value ?? rule.text ?? rule.description }}@else{{ rule }}@endif</li>
+                @endforeach
+                @foreach(cancellation_policies ?? [] as $policy)
+                <li>{{ policy.description ?? policy }}@if(policy.adultPenaltyPercentage != null) — جریمه بزرگسال {{ policy.adultPenaltyPercentage | digits }}٪@endif</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        @if(notes)
+        <div class="note"><strong>توضیحات: </strong>{{ notes }}</div>
+        @endif
+
+        <p class="foot-note">حضور در فرودگاه حداقل دو ساعت قبل از پرواز داخلی و سه ساعت قبل از پرواز خارجی توصیه می‌شود. این بلیط توسط {{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }} صادر شده است@if(supplier_code) · تأمین‌کننده: {{ supplier_code }}@endif.</p>
+    </div>
+</body>
+</html>

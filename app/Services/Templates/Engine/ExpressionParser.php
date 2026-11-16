@@ -54,6 +54,8 @@ final class ExpressionParser
      */
     public const ALLOWED_FILTERS = [
         'number' => [0, 0],
+        'digits' => [0, 0],
+        'qr' => [0, 0],
         'jdate' => [0, 1],
         'jdatetime' => [0, 1],
         'upper' => [0, 0],

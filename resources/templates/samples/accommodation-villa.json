@@ -1,0 +1,44 @@
+{
+  "accommodation_type": "villa",
+  "guest_name": "سارا محمدی",
+  "hotel_name": "ویلای ساحلی نخل",
+  "booking_reference": "AH-VIL-1405-1208",
+  "re_code": "R-56002",
+  "status": "confirmed",
+  "check_in": "2026-12-18",
+  "check_out": "2026-12-21",
+  "check_in_label": "۲۷ آذر ۱۴۰۵",
+  "check_out_label": "۳۰ آذر ۱۴۰۵",
+  "check_in_time": "15:00",
+  "check_out_time": "11:00",
+  "nights": 3,
+  "room_count": 1,
+  "city": "رامسر",
+  "address": "جاده ساحلی، کوچه یاس ۳",
+  "rooms": [
+    {
+      "name": "ویلای دوخوابه استخردار",
+      "adults": 4,
+      "children": 1,
+      "extra_beds": 1
+    }
+  ],
+  "guests": [
+    {"name": "سارا محمدی", "national_id": "0066554433", "phone": "09350000000"},
+    {"name": "رضا محمدی", "passport": "P998877"}
+  ],
+  "total_price": 24500000,
+  "currency": "تومان",
+  "payment": {
+    "gateway_amount": 24500000,
+    "transaction_id": "441122",
+    "paid_at_label": "۲۰ آذر ۱۴۰۵"
+  },
+  "contact_phone": "09350000000",
+  "rules": [
+    "استخر فقط تا ساعت ۲۲ قابل استفاده است.",
+    "ورود حیوان خانگی مجاز نیست."
+  ],
+  "notes": "کلید را نگهبان مجموعه تحویل می‌دهد.",
+  "agency_name": "آژانس مسافرتی آسمان هفتم"
+}

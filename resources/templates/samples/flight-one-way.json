@@ -1,0 +1,85 @@
+{
+  "pnr": "KIS7H2",
+  "ticket_number": "096-2201457781",
+  "hub_public_id": "fl_19ab",
+  "tracking_code": "TRK-77821",
+  "re_code": "R-57011",
+  "supplier_code": "flight_hub",
+  "invoice_number": "INV-1405-3104",
+  "status": "issued",
+  "status_label": "صادرشده",
+  "trip_type": "one_way",
+  "summary": "تهران به کیش",
+  "airline": "کیش ایر",
+  "cabin_class": "اکونومی",
+  "fare_type": "سیستمی",
+  "baggage": "۲۰ کیلوگرم",
+  "issued_at": "2026-12-01",
+  "issued_at_label": "۱۰ آذر ۱۴۰۵",
+  "contact_name": "نگار احمدی",
+  "contact_phone": "09121112233",
+  "contact_email": "negar@example.com",
+  "passengers": [
+    {
+      "first_name": "نگار",
+      "last_name": "احمدی",
+      "national_id": "0022334455",
+      "type": "ADT",
+      "ticket_number": "096-2201457781"
+    },
+    {
+      "firstName": "آرمین",
+      "lastName": "احمدی",
+      "nationalId": "0099887766",
+      "passengerType": "CHD",
+      "ticketNumber": "096-2201457782"
+    }
+  ],
+  "segments": [
+    {
+      "direction": "outbound",
+      "position": 1,
+      "from_city_name": "تهران",
+      "to_city_name": "کیش",
+      "from_code": "IKA",
+      "to_code": "KIH",
+      "depart_date": "2026-12-18",
+      "depart_date_label": "۲۷ آذر ۱۴۰۵",
+      "depart_time": "09:15",
+      "arrival_date_label": "۲۷ آذر ۱۴۰۵",
+      "arrival_time": "11:05",
+      "airline": "کیش ایر",
+      "flight_number": "Y9 712",
+      "cabin_class": "اکونومی",
+      "booking_class": "Y",
+      "baggage": "۲۰ کیلوگرم",
+      "terminal": "1",
+      "arrival_terminal": "اصلی",
+      "duration": "۱ ساعت و ۵۰ دقیقه",
+      "equipment": "Boeing 737"
+    }
+  ],
+  "fare_breakdown": [
+    {"label": "بزرگسال", "passenger_type": "ADT", "quantity": 1, "base_fare": 3200000, "tax": 480000, "total": 3680000},
+    {"label": "کودک", "passenger_type": "CHD", "quantity": 1, "base_fare": 2400000, "tax": 360000, "total": 2760000}
+  ],
+  "base_fare": 5600000,
+  "tax": 840000,
+  "total_price": 6440000,
+  "sell_price": 6440000,
+  "currency": "تومان",
+  "payment": {
+    "wallet_paid": 440000,
+    "gateway_amount": 6000000,
+    "transaction_id": "5566778899",
+    "paid_at_label": "۱۰ آذر ۱۴۰۵ — ۱۶:۰۵"
+  },
+  "rules": [
+    "این نرخ غیرقابل استرداد است.",
+    {"label": "بار کابین", "value": "یک بسته تا ۷ کیلوگرم"}
+  ],
+  "cancellation_policies": [
+    {"description": "پس از صدور، جریمه کنسلی ۱۰۰٪ است.", "adultPenaltyPercentage": 100, "childPenaltyPercentage": 100}
+  ],
+  "agency_name": "آژانس مسافرتی آسمان هفتم"
+}

@@ -35,6 +35,19 @@ class SafeTemplateRendererTest extends TestCase
         $this->assertStringNotContainsString('<script>', $html);
     }
 
+    public function test_digits_filter_uses_persian_numerals_and_qr_is_unescaped_svg(): void
+    {
+        $html = $this->renderer->render(
+            '{{ amount | number | digits }} {{ code | qr }}',
+            ['amount' => 12500000, 'code' => 'BK-100'],
+        );
+
+        $this->assertStringContainsString('۱۲٬۵۰۰٬۰۰۰', $html);
+        $this->assertStringContainsString('<svg', $html);
+        $this->assertStringNotContainsString('&lt;svg', $html);
+        $this->assertStringNotContainsString('BK-100', $html);
+    }
+
     public function test_bare_and_dollar_prefixed_variables_are_equivalent(): void
     {
         $html = $this->renderer->render('{{ name }}|{{ $name }}', ['name' => 'مهمان']);

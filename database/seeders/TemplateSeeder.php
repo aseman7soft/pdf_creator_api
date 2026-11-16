@@ -5,176 +5,81 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Template;
+use Database\Seeders\Support\TravelDocumentCatalog;
 use Illuminate\Database\Seeder;
 
 class TemplateSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->seedHotelVoucher();
+        $this->seedTravelDocuments();
         $this->seedInvoice();
         $this->seedTourItinerary();
     }
 
-    private function seedHotelVoucher(): void
+    /**
+     * Upsert the accommodation voucher (hotel-voucher + accommodation-voucher)
+     * and the flight ticket. Safe to run from a migration on deploy.
+     */
+    public function seedTravelDocuments(): void
     {
-        $html = <<<'HTML'
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="utf-8">
-    <title>واچر هتل</title>
-    <style>
-        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-regular') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
-        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-bold') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Vazirmatn', Tahoma, sans-serif; direction: rtl; margin: 0; padding: 0; color: #1f2937; font-size: 13px; line-height: 1.9; }
-        .page { padding: 8mm 6mm; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0d6efd; padding-bottom: 8px; margin-bottom: 18px; }
-        .brand { font-size: 20px; font-weight: 700; color: #0d6efd; }
-        .doc-title { font-size: 16px; font-weight: 700; color: #334155; }
-        .hero { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); color: #fff; border-radius: 10px; padding: 14px 18px; margin-bottom: 18px; }
-        .hero h1 { margin: 0 0 4px; font-size: 20px; }
-        .hero p { margin: 0; opacity: .9; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-        th, td { border: 1px solid #e2e8f0; padding: 8px 10px; text-align: right; vertical-align: top; }
-        th { background: #f1f5f9; font-weight: 700; color: #334155; width: 32%; }
-        .section-title { font-size: 14px; font-weight: 700; color: #0d6efd; margin: 18px 0 8px; border-right: 4px solid #0d6efd; padding-right: 8px; }
-        .guests th, .guests td { text-align: center; }
-        .total { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 700; color: #065f46; }
-        .muted { color: #64748b; font-size: 12px; }
-        .notes { background: #fffbeb; border: 1px dashed #f59e0b; border-radius: 8px; padding: 10px 14px; margin-top: 16px; font-size: 12px; }
-        .signature { margin-top: 34px; display: flex; justify-content: space-between; color: #64748b; font-size: 12px; }
-        .page-break { page-break-after: always; }
-    </style>
-</head>
-<body>
-    <div class="page">
-        <div class="header">
-            <div class="brand" style="display:flex;align-items:center;gap:10px;">
-                <img src="asset://aseman-haftom-logo" alt="آسمان هفتم" style="height:48px;">
-                <span>{{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }}</span>
-            </div>
-            <div class="doc-title">واچر رزرو هتل</div>
-        </div>
+        $this->seedAccommodationVoucher(
+            'hotel-voucher',
+            'واچر اقامت',
+            'hotel',
+            'واچر اقامت آسمان هفتم برای هتل، اقامتگاه و ویلا. با payload قبلی hotel-voucher سازگار است.',
+        );
+        $this->seedAccommodationVoucher(
+            'accommodation-voucher',
+            'واچر اقامت (هتل / اقامتگاه / ویلا)',
+            'accommodation',
+            'قالب مشترک واچر هتل، اقامتگاه و ویلا. عنوان با accommodation_type عوض می‌شود.',
+        );
+        $this->seedFlightTicket();
+    }
 
-        <div class="hero">
-            <h1>{{ hotel_name }}</h1>
-            <p>کد رزرو: {{ booking_reference }} | تاریخ صدور: @jdate(now())</p>
-        </div>
-
-        <table>
-            <tr>
-                <th>نام مهمان</th>
-                <td>{{ guest_name }}</td>
-            </tr>
-            <tr>
-                <th>تاریخ ورود</th>
-                <td>@jdate($check_in)</td>
-            </tr>
-            <tr>
-                <th>تاریخ خروج</th>
-                <td>@jdate($check_out)</td>
-            </tr>
-            <tr>
-                <th>تعداد شب</th>
-                <td>{{ nights ?? '—' }}</td>
-            </tr>
-            <tr>
-                <th>تعداد اتاق</th>
-                <td>{{ room_count }} اتاق</td>
-            </tr>
-            <tr>
-                <th>مبلغ کل</th>
-                <td>{{ total_price | number }} {{ currency }}</td>
-            </tr>
-        </table>
-
-        @if(isset($guests) && count($guests) > 0)
-        <div class="section-title">اسامی همراهان</div>
-        <table class="guests">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>نام</th>
-                    <th>کد ملی / گذرنامه</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($guests as $guest)
-                <tr>
-                    <td>{{ loop.iteration }}</td>
-                    <td>{{ guest.name }}</td>
-                    <td>{{ guest.national_id ?? guest.passport ?? '—' }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        @endif
-
-        @if(isset($notes) && $notes)
-        <div class="notes">
-            <strong>توضیحات:</strong> {{ notes }}
-        </div>
-        @endif
-
-        <div class="total">
-            <span>مبلغ قابل پرداخت</span>
-            <span>{{ total_price | number }} {{ currency }}</span>
-        </div>
-
-        <div class="signature">
-            <span>مهر و امضای آژانس</span>
-            <span>این سند توسط آژانس مسافرتی آسمان هفتم صادر شده است.</span>
-        </div>
-    </div>
-</body>
-</html>
-HTML;
-
-        $footer = <<<'HTML'
-<div style="width: 100%; font-family: 'Vazirmatn', Tahoma, sans-serif; font-size: 9px; color: #64748b; direction: rtl; padding: 0 12mm;">
-    <div style="display: flex; justify-content: space-between;">
-        <span>آژانس مسافرتی آسمان هفتم</span>
-        <span>صفحه <span class="pageNumber"></span> از <span class="totalPages"></span></span>
-    </div>
-</div>
-HTML;
-
+    private function seedAccommodationVoucher(string $slug, string $name, string $category, string $description): void
+    {
         $template = Template::query()->updateOrCreate(
-            ['slug' => 'hotel-voucher'],
+            ['slug' => $slug],
             [
-                'name' => 'واچر هتل',
-                'category' => 'hotel',
-                'description' => 'واچر رزرو هتل آسمان هفتم — فارسی/RTL، بدون برند تأمین‌کننده.',
-                'html' => $html,
-                'footer_html' => $footer,
+                'name' => $name,
+                'category' => $category,
+                'description' => $description,
+                'html' => TravelDocumentCatalog::html('accommodation-voucher.html'),
+                'footer_html' => TravelDocumentCatalog::footer(),
                 'is_active' => true,
                 'locale' => 'fa',
                 'page_size' => 'A4',
                 'orientation' => 'portrait',
-                'margins' => ['top' => 22, 'right' => 10, 'bottom' => 18, 'left' => 10],
+                'margins' => ['top' => 16, 'right' => 10, 'bottom' => 16, 'left' => 10],
                 'pdf_options' => ['print_background' => true, 'scale' => 1.0, 'display_header_footer' => true],
             ],
         );
 
-        $variables = [
-            ['name' => 'guest_name', 'label' => 'نام مهمان', 'type' => 'string', 'is_required' => true, 'validation_rules' => 'max:120', 'sort_order' => 1],
-            ['name' => 'hotel_name', 'label' => 'نام هتل', 'type' => 'string', 'is_required' => true, 'validation_rules' => 'max:150', 'sort_order' => 2],
-            ['name' => 'booking_reference', 'label' => 'کد رزرو', 'type' => 'string', 'is_required' => true, 'validation_rules' => 'max:60', 'sort_order' => 3],
-            ['name' => 'check_in', 'label' => 'تاریخ ورود', 'type' => 'date', 'is_required' => true, 'sort_order' => 4],
-            ['name' => 'check_out', 'label' => 'تاریخ خروج', 'type' => 'date', 'is_required' => true, 'sort_order' => 5],
-            ['name' => 'room_count', 'label' => 'تعداد اتاق', 'type' => 'integer', 'is_required' => true, 'default_value' => '1', 'min_value' => 1, 'max_value' => 20, 'sort_order' => 6],
-            ['name' => 'total_price', 'label' => 'مبلغ کل', 'type' => 'decimal', 'is_required' => true, 'min_value' => 0, 'sort_order' => 7],
-            ['name' => 'currency', 'label' => 'واحد پول', 'type' => 'string', 'is_required' => true, 'default_value' => 'IRR', 'validation_rules' => 'max:10', 'sort_order' => 8],
-            ['name' => 'guests', 'label' => 'اسامی همراهان', 'type' => 'array', 'is_required' => false, 'description' => 'آرایه‌ای از اشیاء با کلیدهای name و passport', 'sort_order' => 9],
-            ['name' => 'notes', 'label' => 'توضیحات', 'type' => 'text', 'is_required' => false, 'validation_rules' => 'max:1000', 'sort_order' => 10],
-            ['name' => 'nights', 'label' => 'تعداد شب', 'type' => 'integer', 'is_required' => false, 'min_value' => 0, 'sort_order' => 11],
-            ['name' => 'agency_name', 'label' => 'نام آژانس', 'type' => 'string', 'is_required' => false, 'default_value' => 'آژانس مسافرتی آسمان هفتم', 'sort_order' => 12],
-            ['name' => 'agency_logo', 'label' => 'لوگوی آژانس (URL)', 'type' => 'string', 'is_required' => false, 'sort_order' => 13],
-        ];
+        $this->syncVariables($template, TravelDocumentCatalog::accommodationVariables());
+    }
 
-        $this->syncVariables($template, $variables);
+    private function seedFlightTicket(): void
+    {
+        $template = Template::query()->updateOrCreate(
+            ['slug' => 'flight-ticket'],
+            [
+                'name' => 'بلیط هواپیما',
+                'category' => 'flight',
+                'description' => 'بلیط الکترونیک پرواز آسمان هفتم؛ یک‌طرفه و رفت‌وبرگشت، چندمسافر و چندسگمنت.',
+                'html' => TravelDocumentCatalog::html('flight-ticket.html'),
+                'footer_html' => TravelDocumentCatalog::footer(),
+                'is_active' => true,
+                'locale' => 'fa',
+                'page_size' => 'A4',
+                'orientation' => 'portrait',
+                'margins' => ['top' => 16, 'right' => 10, 'bottom' => 16, 'left' => 10],
+                'pdf_options' => ['print_background' => true, 'scale' => 1.0, 'display_header_footer' => true],
+            ],
+        );
+
+        $this->syncVariables($template, TravelDocumentCatalog::flightVariables());
     }
 
     private function seedInvoice(): void
