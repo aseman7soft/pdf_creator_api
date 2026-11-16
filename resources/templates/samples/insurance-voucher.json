@@ -1,0 +1,28 @@
+{
+  "re_code": "51002",
+  "subject": "بیمه مسافرتی شنگن",
+  "plan": "طرح طلایی ۳۰ روزه",
+  "policy_number": "INS-51002",
+  "status_label": "صادر شده",
+  "invoice_number": "7751002",
+  "issue_date_label": "۲۰ آبان ۱۴۰۵",
+  "leader_name": "سارا محمدی",
+  "name_leader": "سارا",
+  "family_leader": "محمدی",
+  "code_meli": "0012345678",
+  "destination": "اروپا",
+  "date_start_label": "۱۰ آذر ۱۴۰۵",
+  "date_end_label": "۱۰ دی ۱۴۰۵",
+  "coverage": "درمان اضطراری، تأخیر پرواز و مفقودی بار طبق طرح.",
+  "coverage_items": ["سقف درمان ۵۰٬۰۰۰ یورو", "تأخیر بیش از ۶ ساعت"],
+  "insured": [
+    {"firstName": "سارا", "lastName": "محمدی", "codeMeli": "0012345678", "birthday_label": "۱۲ خرداد ۱۳۷۰"},
+    {"name": "کیان محمدی", "national_id": "0012345679", "birthday_label": "۳ تیر ۱۳۹۴"}
+  ],
+  "price": 9800000,
+  "currency": "ریال",
+  "notes": "شماره بیمه‌نامه را هنگام مراجعه به مرکز درمانی همراه داشته باشید.",
+  "supplier_code": "insure_hub",
+  "confirmation_code": "POL-SUP-77",
+  "hub_public_id": "in_44ab"
+}

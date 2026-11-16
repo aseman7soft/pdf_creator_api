@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>واچر CIP</title>
+    <style>
+        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-regular') format('woff2'); font-weight: 400; font-display: swap; }
+        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-bold') format('woff2'); font-weight: 700; font-display: swap; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Vazirmatn', Tahoma, sans-serif; direction: rtl; margin: 0; color: #1b2430; font-size: 12px; line-height: 1.7; }
+        .stripe { height: 6px; background: linear-gradient(90deg, #e2231a 0 18%, #12356b 18% 100%); }
+        .page { padding: 4mm; }
+        .header, .brand { display: flex; align-items: center; gap: 8px; }
+        .header { justify-content: space-between; }
+        .brand img { height: 36px; max-width: 150px; object-fit: contain; }
+        .name { font-weight: 700; color: #12356b; font-size: 15px; }
+        .sub { display: block; font-size: 10px; color: #5e6b7a; }
+        h2 { margin: 0; color: #12356b; font-size: 22px; }
+        .kicker { color: #e2231a; font-size: 11px; font-weight: 700; }
+        .status { display: inline-block; margin-top: 4px; background: #e8f6ee; color: #0f7a4a; border-radius: 999px; padding: 2px 10px; font-size: 11px; font-weight: 700; }
+        .meta { width: 100%; margin: 8px 0 12px; }
+        .meta td { vertical-align: middle; }
+        .card { background: #f5f7fb; border: 1px solid #e3e8ef; border-radius: 12px; padding: 8px; }
+        .grid { width: 100%; border-collapse: collapse; }
+        .grid td { width: 25%; padding: 6px 8px; }
+        .lbl { display: block; color: #5e6b7a; font-size: 10px; }
+        .val { font-weight: 700; color: #12356b; }
+        .qr { width: 108px; text-align: center; }
+        .qr svg { width: 88px; height: 88px; }
+        .hero { background: #12356b; color: #fff; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+        .hero h1 { margin: 0; font-size: 20px; }
+        .section { margin: 12px 0 6px; font-weight: 700; color: #12356b; border-right: 4px solid #e2231a; padding-right: 8px; }
+        table.data { width: 100%; border-collapse: collapse; }
+        table.data th, table.data td { border: 1px solid #e3e8ef; padding: 6px 8px; text-align: right; }
+        table.data th { background: #f5f7fb; color: #12356b; }
+        .ltr { direction: ltr; unicode-bidi: isolate; }
+        .money td { padding: 5px 8px; border-bottom: 1px solid #eef2f6; }
+        .amt { text-align: left; direction: ltr; font-weight: 700; color: #12356b; }
+        .grand td { background: #12356b; color: #fff; font-weight: 700; }
+        .note { background: #fff8eb; border: 1px dashed #e0b15a; border-radius: 10px; padding: 8px 12px; margin-top: 8px; }
+    </style>
+</head>
+<body>
+<div class="stripe"></div>
+<div class="page">
+    <div class="header">
+        <div class="brand"><img src="asset://aseman-haftom-logo" alt="آسمان هفتم"><div><span class="name">{{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }}</span><span class="sub">خدمات تشریفات فرودگاهی</span></div></div>
+        <div><div class="kicker">CIP</div><h2>واچر تشریفات</h2><div class="status">{{ status_label ?? 'صادر شده' }}</div></div>
+    </div>
+    <table class="meta"><tr>
+        <td><div class="card"><table class="grid"><tr>
+            <td><span class="lbl">کد رزرو</span><span class="val ltr">{{ re_code }}</span></td>
+            <td><span class="lbl">شماره فاکتور</span><span class="val ltr">{{ invoice_number ?? '—' }}</span></td>
+            <td><span class="lbl">فرودگاه</span><span class="val">{{ airport ?? '—' }}</span></td>
+            <td><span class="lbl">نوع خدمت</span><span class="val">{{ service_label ?? service_type ?? '—' }}</span></td>
+        </tr></table></div></td>
+        <td class="qr">{{ re_code | qr }}<div class="ltr">{{ re_code }}</div></td>
+    </tr></table>
+    <div class="hero">
+        <h1>{{ subject ?? 'خدمات CIP' }}</h1>
+        <div>{{ origin ?? '—' }} ← {{ destination ?? '—' }}</div>
+        <div>{{ airline ?? '' }} <span class="ltr">{{ flight_number ?? '' }}</span></div>
+    </div>
+    <table class="grid">
+        <tr>
+            <td><span class="lbl">تاریخ پرواز</span><span class="val">@if(flight_date_label){{ flight_date_label | digits }}@elseif(flight_date){{ flight_date | jdate('Y/m/d') | digits }}@else —@endif</span></td>
+            <td><span class="lbl">ساعت</span><span class="val">{{ (flight_time ?? '—') | digits }}</span></td>
+            <td><span class="lbl">مسافر اصلی</span><span class="val">{{ leader_name ?? ((name_leader ?? '') . ' ' . (family_leader ?? '')) }}</span></td>
+            <td><span class="lbl">تماس</span><span class="val ltr">{{ cell ?? '—' }}</span></td>
+        </tr>
+    </table>
+    @if(count(orders ?? []) > 0)
+    <div class="section">سرویس مازاد</div>
+    <table class="data">
+        <thead><tr><th>شرح</th><th>تعداد</th><th>مبلغ</th></tr></thead>
+        <tbody>
+        @foreach($orders as $order)
+        <tr>
+            <td>{{ order.title ?? '—' }}</td>
+            <td>{{ (order.count ?? '—') | digits }}</td>
+            <td class="ltr">{{ (order.total ?? order.price ?? 0) | number | digits }} {{ currency ?? 'ریال' }}</td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+    <div class="section">مسافران</div>
+    <table class="data">
+        <thead><tr><th>#</th><th>نام</th><th>کد ملی / گذرنامه</th></tr></thead>
+        <tbody>
+        @foreach(passengers ?? [] as $passenger)
+        <tr>
+            <td>{{ loop.iteration | digits }}</td>
+            <td>{{ passenger.name ?? ((passenger.first_name ?? passenger.firstName ?? '') . ' ' . (passenger.last_name ?? passenger.lastName ?? '')) }}</td>
+            <td class="ltr">{{ passenger.national_id ?? passenger.code_meli ?? passenger.codeMeli ?? passenger.passport ?? '—' }}</td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    <div class="section">مبلغ</div>
+    <table class="money" style="width:100%;border-collapse:collapse;">
+        <tr class="grand"><td>مبلغ کل</td><td class="amt">{{ (total_price ?? price ?? 0) | number | digits }} {{ currency ?? 'ریال' }}</td></tr>
+    </table>
+    @if(notes)<div class="note">{{ notes }}</div>@endif
+</div>
+</body>
+</html>

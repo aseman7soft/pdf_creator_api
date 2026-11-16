@@ -166,7 +166,7 @@ API_KEY_HASH_SALT=   # خروجی: openssl rand -hex 32  (در لوکال ثاب
 & $php artisan migrate --seed
 ```
 
-این دستور `SettingsSeeder`، `AdminUserSeeder`، `AssetSeeder` (فونت‌های Vazirmatn)، `TemplateSeeder` (قالب‌های `hotel-voucher`، `accommodation-voucher`، `flight-ticket`، `invoice-standard`، `tour-itinerary`) و در محیط `local`/`testing` پروژهٔ نمایشی `demo-project` را می‌سازد. کلید API نمایشی در خروجی `db:seed` **یک‌بار** چاپ می‌شود. روی سرور، `migrate` همان واچر اقامت و بلیط را هم می‌سازد تا بعد از deploy در دیتابیس باشند.
+این دستور `SettingsSeeder`، `AdminUserSeeder`، `AssetSeeder` (فونت‌های Vazirmatn)، `TemplateSeeder` (قالب‌های `hotel-voucher`، `accommodation-voucher`، `flight-ticket`، `tour-voucher`، `insurance-voucher`، `visa-voucher`، `cip-voucher`، `reservation-document`، `invoice-standard`، `tour-itinerary`) و در محیط `local`/`testing` پروژهٔ نمایشی `demo-project` را می‌سازد. کلید API نمایشی در خروجی `db:seed` **یک‌بار** چاپ می‌شود. روی سرور، `migrate` همان واچر اقامت و بلیط را هم می‌سازد تا بعد از deploy در دیتابیس باشند.
 
 6) ساخت assetهای فرانت‌اند:
 
@@ -533,6 +533,129 @@ JSON
 فیلدهای اختیاری اگر نباشند بخش مربوط پنهان می‌شود. آرایهٔ مسیر به ترتیب `segments`، سپس `reservation_flight_segments`، سپس `route_snapshot.card.legs` خوانده می‌شود. نام ستون‌های جدول `reservation_flight_segments` (`direction`, `from_city_name`, `to_city_name`, `depart_date`, `depart_time`, `airline`, `flight_number`) و نام‌های کارت پرواز سایت (`flightNumber`, `originCityLabel`, `departureTime`, `cabinClassLabel`, `baggage`, …) هر دو روی هر سگمنت قبول می‌شوند. مسافر هم `first_name`/`last_name` و هم `firstName`/`lastName` را می‌پذیرد.
 
 طرح کامل فیلدها از `GET /api/v1/templates/{slug}` (آرایهٔ `variables`) و از فایل‌های نمونه است.
+
+## چاپ از صفحهٔ show_abs (نسخه ۳ رزرو)
+
+این بخش قرارداد سایت `asemanhaftom.ir.v4` است. صفحهٔ `/dashboard/reservation/show_abs/{id}` کنترلر `ReservationsController::absenteeism_show` و Livewire `ShowAbs` (`livewire.admin.reserve.abs.show-abs`) است. PDF فعلی همان صفحه `ReserveVoucherPdfService` و Blade `user.pdf.abs_reserve_pdf` است و اسلاگ قالب ندارد. دکمهٔ چاپ جدید باید به‌جای آن HTML، به `POST /api/v1/documents/generate` با اسلاگ زیر بزند.
+
+نسخه ۳ رزرو جدول جدا نیست. ویزارد `GET /dashboard/re/re_new_v3` (`ReserveBook\V3`) همان مدل `ReserveBook\Models\Reservations` را پر می‌کند. `type` رشتهٔ استراتژی است و `main_type` گروه را نگه می‌دارد. سگمنت پرواز سوتو در `reservation_flight_segments` است (`FlightSegmentPersistenceService`). رزروهای قدیمی‌تر همان ستون‌ها را دارند؛ جایی که PDF فعلی `oneDay` را جدا از `abs_oneDay` چک می‌کند، هر دو را بفرستید.
+
+مبلغ `reservations.price`، `prepayment` و `invoice.amount` در این مسیر **ریال** است. `currency` را `ریال` بفرستید و تقسیم نکنید. (بلیط و هتل آنلاین که از `success_document` می‌آیند هنوز تومان‌اند و قالب‌های `flight-ticket` / `accommodation-voucher` را با همان واحد فعلی صدا می‌زنند.) تاریخ را اگر سایت از قبل شمسی دارد در `*_label` بفرستید (`dateToJalali` / `dateToJalali_date`). میلادی فقط `Y-m-d` باشد.
+
+هیچ‌کدام از این قالب‌ها `supplier_code`، `confirmation_code`، `hub_public_id`، کد تأیید اتاق، یا برچسب «تأمین‌کننده» را چاپ نمی‌کنند. این کلیدها را می‌توان فرستاد. در QR و شماره‌ها فقط `re_code`، شماره فاکتور، PNR، شماره بلیط، و شماره بیمه‌نامه/پروندهٔ خود آژانس مجاز است.
+
+**توصیه:** برای هر رزرو تک‌محصول، قالب همان نوع را صدا بزنید. تور (`abs_dom` / `abs_int` / `abs_oneDay`) از قبل هتل و پرواز و در صورت وجود بیمه را در `tour-voucher` جمع می‌کند؛ برای تور قالب جداگانهٔ هتل/پرواز نسازید. `reservation-document` فقط برای `abs_cancel_reserve`، نوع ناشناخته، یا سبدی که چند رزرو مستقل است و یک تور نیست. `tour-itinerary` قالب برنامهٔ سفر قبلی است و جایگزین واچر تور نیست. قطار/اتوبوس/ترانسفر نوع رزرو جدا در نسخه ۳ نیستند: حمل‌ونقل روی تور در `transportation` است و ترانسفر داخل رشتهٔ `services` (`city_tour / transfer`).
+
+| `reservations.type` | `main_type` | slug |
+| --- | --- | --- |
+| `abs_dom` | `tour` | `tour-voucher` (`tour_kind=abs_dom`) |
+| `abs_int` | `tour` | `tour-voucher` (`tour_kind=abs_int`) |
+| `abs_oneDay` و قدیمی `oneDay` | `oneDay` | `tour-voucher` |
+| `abs_hotel` | `hotel` | `accommodation-voucher` (همان HTML `hotel-voucher`) |
+| `abs_fly_dom`، `abs_fly_int`، `abs_fly_soto` | `fly` | `flight-ticket` |
+| `abs_insure` | `insure` | `insurance-voucher` |
+| `abs_visa` | `visa` | `visa-voucher` |
+| `abs_cancel_reserve` و نوع ناشناخته | — | `reservation-document` |
+| `cip_dom_to_dom_exit`، `cip_dom_to_int`، `cip_int_to_dom`، `cip_dom_to_dom_inter` | صفحهٔ CIP، نه show_abs | `cip-voucher` |
+
+فیلدهای مشترک show_abs (همهٔ اسلاگ‌های جدید، و تا جایی که نام فرق دارد برای هتل/پرواز):
+
+- `re_code` ← `reservations.re_code` (الزامی؛ QR همین است)
+- `subject` ← `reservations.subject` (در PDF فعلی برای ویزا/بیمه `invoice.subject` اگر عنوان رزرو خالی است)
+- `status_label` ← `status_reserve(status)` و `payment_status_label` ← `status_pay(invoice.status)`
+- `invoice_number` ← `invoice.invoice_number`
+- `issue_date_label` ← `dateToJalali_date(created_at)`
+- `leader_name` ← `trim(nameLeader.' '.familyLeader)` یا جدا `name_leader` / `family_leader`
+- `code_meli` ← `codeMeli`، `cell` ← `cell`
+- `passenger_count` ← `countPassenger`
+- `passengers` ← `Passenger` با `reservations_id` و `role=passenger` (اگر سرپرست در این لیست نیست، ردیف لیدر را هم اضافه کنید): `firstName`, `lastName`, `codeMeli`, `rangAge`, `age`. `age_group_label` را از `rangAge()` بسازید (`adult`/`child`/`infant`).
+- `price` ← `reservations.price`، `prepayment` ← `prepayment`، `currency` = `ریال`
+- `price_2` / `currency_2` فقط روی تور (و هر جا ستون پر است)
+- `payment.transaction_id` ← `invoice.transaction_id`
+- `notes` ← `note_for_passenger`
+
+### `tour-voucher`
+
+نمونه: `resources/templates/samples/tour-voucher.json`.
+
+- `tour_kind` = `type`
+- `origin` = `city_name(initialPoint_id) ?: initialPoint`، `destination` = `city_name(cityCode) ?: city`
+- `date_start_label` / `date_end_label` از `dateStartTour` / `dateEndTour`
+- `duration`، `transportation_label` = `transportation_fa(transportation)`
+- `company_departure`, `time_departure`, `company_back`, `time_back`
+- `segments` از `flightSegments` (سوتو و هر رزروی که ردیف دارد): `direction`, `from_city_name`, `to_city_name`, `depart_date` به `Y-m-d` یا `depart_date_label`, `depart_time`, `airline`, `flight_number`. اگر ردیف نیست، بلوک شرکت/ساعت کافی است.
+- `hotel_name` یا `final_hotel_name` = `finalHotelName ?: hotelName`، `hotel_rate` = `hotelRate`
+- `rooms` = `read_typeRooms(nameRooms)` با `type` و `board_label` = `board_name(board)`. `name_rooms` را هم می‌توان خام فرستاد. `confirmation_code` اتاق چاپ نمی‌شود.
+- `services` = ستون `services` (گشت / ترانسفر)
+- `days` فقط اگر سایت برنامهٔ روزانه دارد. نسخه ۳ این ردیف را ذخیره نمی‌کند؛ نفرستادن آن بخش را پنهان می‌کند.
+- `insurance` فقط اگر یک رزرو `abs_insure` به این تور وصل است: `{plan: subject, policy_number: re_code آن بیمه, coverage, destination}`. ستون بیمه روی خود ردیف تور نیست.
+- `guide_name` / `guide_phone` اختیاری‌اند؛ نسخه ۳ ستون راهنما ندارد.
+- `rules` آرایهٔ رشته (مثلاً متن اصلاحیه قرارداد). شناسه تأمین‌کننده داخل متن نگذارید.
+
+### `insurance-voucher`
+
+نمونه: `resources/templates/samples/insurance-voucher.json`. استراتژی `InsureStrategy` عنوان را در `subject` می‌نویسد و `main_type=insure`. طرح جدا، شماره بیمه‌نامهٔ تأمین‌کننده، و بازهٔ پوشش ستون اجباری نیستند.
+
+- `plan` اگر متن بازاری دارید، وگرنه قالب `subject` را چاپ می‌کند
+- `policy_number` = شمارهٔ مشتری‌پسند خود آژانس، و اگر نیست `re_code`. QR همین شماره است
+- `destination` از `city` در صورت وجود
+- `date_start_label` / `date_end_label` فقط وقتی `dateStartTour` / `dateEndTour` پر است
+- `coverage` از `services` یا یادداشت؛ `coverage_items` اختیاری
+- `insured` همان شکل `passengers`؛ `birthday_label` از `birthdayLeader` برای سرپرست
+
+### `visa-voucher`
+
+نمونه: `resources/templates/samples/visa-voucher.json`. `VisaStrategy`: `subject`، `countPassenger`، سرپرست، قیمت. نوع ویزا ستون جدا نیست.
+
+- `subject` عنوان ویزا، `visa_type` فقط اگر برچسب اضافه دارید
+- `case_number` = `re_code` مگر پروندهٔ داخلی دیگری داشته باشید
+- `destination`، `travel_date_label` اگر تاریخ سفر ذخیره شده
+- `passenger_count`، `passengers[].passport` اگر روی مسافر هست
+- `rules` مدارک موردنیاز به‌صورت رشته
+
+### `accommodation-voucher` برای `abs_hotel`
+
+از قالب موجود استفاده کنید، با واحد ریال:
+
+- `accommodation_type` = `hotel` (یا ویلا/اقامتگاه اگر محصول همان است)
+- `guest_name` = سرپرست، `hotel_name` = `finalHotelName ?: hotelName`
+- `booking_reference` و `voucher_number` = `re_code` (کد تأیید هتل تأمین‌کننده را در `booking_reference` نگذارید)
+- `re_code`, `invoice_number`
+- `check_in_label` / `check_out_label` از `dateStartTour`/`checkIn` و `dateEndTour`/`checkOut`
+- `nights` = `duration`، `stars` = `hotelRate`، `city` = `city_name(cityCode)`
+- `rooms` مثل تور، `board` در سطح رزرو اگر اتاق برد ندارد
+- `guests` از مسافران، `total_price` = `price`، `currency` = `ریال`
+- `notes` از یادداشت
+
+### `flight-ticket` برای `abs_fly_dom` / `abs_fly_int` / `abs_fly_soto`
+
+- `pnr` = PNR ایرلاین فقط اگر واقعاً کد مسافر است. نسخه ۳ PNR ذخیره نمی‌کند؛ در آن حالت `pnr` = `re_code`. `hub_public_id` را داخل `pnr` نگذارید.
+- `re_code`، `tracking_code` = `invoice.invoice_number` یا `re_code`، `invoice_number`
+- `passengers` الزامی قالب است. `ticket_number` فقط شماره بلیط مسافر.
+- `segments`: برای سوتو ردیف‌های `reservation_flight_segments`. برای پرواز داخلی/خارجی بدون ردیف، یک یا دو سگمنت از `initialPoint`/`city`، `dateStartTour`/`time_departure`/`company_departure` و در برگشت `dateEndTour`/`time_back`/`company_back` بسازید. `direction` = `outbound` یا `return`.
+- `trip_type` = `round_trip` اگر برگشت دارد، وگرنه `one_way`
+- `total_price` = `price`، `currency` = `ریال`، `status_label` از وضعیت رزرو
+
+### `cip-voucher`
+
+جدا از show_abs. Blade فعلی `user.pdf.cip_pdf` این فیلدها را نشان می‌دهد. نمونه: `resources/templates/samples/cip-voucher.json`.
+
+- `re_code` اگر ستون پر است. PDF قدیمی CIP شمارهٔ رزرو را `id` چاپ می‌کند؛ همان عددی را که امروز به مسافر نشان می‌دهید در `re_code` بفرستید، نه شناسهٔ تأمین‌کننده.
+- `service_type` = `type`، `service_label` = `flyType(type)`
+- `airport` متن جایگاه (نمونه: فرودگاه شهید بهشتی اصفهان)
+- `origin` = `initialPoint`، `destination` = `city`، `flight_number` = `fly_number`
+- خروج (`cip_dom_to_dom_exit`, `cip_dom_to_int`): `airline` = `company_departure`، `flight_time` = `time_departure`
+- ورود (`cip_int_to_dom`, `cip_dom_to_dom_inter`): `airline` = `company_back`، `flight_time` = `time_back`
+- `flight_date_label` از `checkInFly`
+- `passengers` با `firstName`, `lastName`, `codeMeli`
+- `orders` از سفارش‌های مازاد: `title`, `count`, `total` (مبلغ ردیف آماده)
+- `price` جمع قابل پرداخت (اگر تخفیف است `specialPrice`)، `currency` = `ریال`
+
+### `reservation-document`
+
+نمونه: `resources/templates/samples/reservation-document.json`. برای کنسلی `type_label` را «کنسلی رزرو» بگذارید، `subject` و `notes` از `note_for_passenger`، `price` مبلغ خسارت. `items[]` = `{kind_label, title, rows:[{label, value}]}` و `value` متن آماده. برای سبد چندرزروی، هر خدمت یک `item` است؛ کد تأمین‌کننده را در `rows` ننویسید.
+
+نمونه‌های رندر: `tour-voucher.json`، `insurance-voucher.json`، `visa-voucher.json`، `cip-voucher.json`، `reservation-document.json`.
 
 ## ساختار پروژه
 

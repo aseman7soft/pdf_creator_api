@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>واچر تور</title>
+    <style>
+        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-regular') format('woff2'); font-weight: 400; font-display: swap; }
+        @font-face { font-family: 'Vazirmatn'; src: url('asset://vazirmatn-bold') format('woff2'); font-weight: 700; font-display: swap; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Vazirmatn', Tahoma, sans-serif; direction: rtl; margin: 0; color: #1b2430; font-size: 12px; line-height: 1.65; }
+        .stripe { height: 6px; background: linear-gradient(90deg, #e2231a 0 18%, #12356b 18% 100%); }
+        .page { padding: 4mm; }
+        .header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .brand { display: flex; align-items: center; gap: 8px; max-width: 68%; }
+        .brand img { height: 36px; max-width: 150px; object-fit: contain; }
+        .brand .name { font-weight: 700; font-size: 15px; color: #12356b; }
+        .brand .sub { display: block; font-size: 10px; color: #5e6b7a; }
+        .doc-kicker { color: #e2231a; font-size: 11px; font-weight: 700; }
+        .doc-title { margin: 0; font-size: 22px; color: #12356b; }
+        .status { display: inline-block; margin-top: 4px; background: #e8f6ee; color: #0f7a4a; border-radius: 999px; padding: 2px 10px; font-size: 11px; font-weight: 700; }
+        .meta { width: 100%; border-collapse: separate; margin: 8px 0 12px; }
+        .meta td { vertical-align: middle; }
+        .meta-card { background: #f5f7fb; border: 1px solid #e3e8ef; border-radius: 12px; padding: 8px; }
+        .meta-grid { width: 100%; border-collapse: collapse; }
+        .meta-grid td { width: 25%; padding: 5px 8px; }
+        .lbl { display: block; color: #5e6b7a; font-size: 10px; }
+        .val { font-weight: 700; color: #12356b; }
+        .qr { width: 108px; text-align: center; }
+        .qr svg { width: 88px; height: 88px; }
+        .qr .code { font-size: 10px; font-weight: 700; direction: ltr; color: #12356b; }
+        .hero { background: #12356b; color: #fff; border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; }
+        .hero h1 { margin: 4px 0 0; font-size: 20px; }
+        .chip { display: inline-block; background: #e2231a; border-radius: 999px; padding: 1px 8px; font-size: 10px; font-weight: 700; }
+        .facts { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .facts td { width: 16.6%; text-align: center; border: 1px solid #e3e8ef; padding: 6px; }
+        .facts strong { color: #12356b; }
+        .section { margin: 12px 0 6px; font-weight: 700; color: #12356b; border-right: 4px solid #e2231a; padding-right: 8px; }
+        table.data { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        table.data th, table.data td { border: 1px solid #e3e8ef; padding: 6px 8px; text-align: right; }
+        table.data th { background: #f5f7fb; color: #12356b; font-size: 11px; }
+        .num { text-align: center; }
+        .ltr { direction: ltr; unicode-bidi: isolate; }
+        .card { border: 1px solid #d5deea; border-radius: 12px; padding: 8px 10px; margin-bottom: 8px; page-break-inside: avoid; }
+        .two { width: 100%; border-collapse: separate; border-spacing: 8px 0; }
+        .two td { width: 50%; vertical-align: top; background: #f5f7fb; border-radius: 10px; padding: 8px 10px; }
+        .money td { padding: 5px 8px; border-bottom: 1px solid #eef2f6; }
+        .money td.amt { text-align: left; direction: ltr; font-weight: 700; color: #12356b; }
+        .money tr.grand td { background: #12356b; color: #fff; font-weight: 700; }
+        .keep { page-break-inside: avoid; }
+        .note, .rules { border-radius: 10px; padding: 8px 12px; font-size: 11px; margin-top: 8px; page-break-inside: avoid; }
+        .note { background: #fff8eb; border: 1px dashed #e0b15a; }
+        .rules { background: #f7f9fc; border: 1px solid #e3e8ef; }
+    </style>
+</head>
+<body>
+<div class="stripe"></div>
+<div class="page">
+    <div class="header">
+        <div class="brand">
+            <img src="asset://aseman-haftom-logo" alt="آسمان هفتم">
+            <div>
+                <span class="name">{{ agency_name ?? 'آژانس مسافرتی آسمان هفتم' }}</span>
+                <span class="sub">واچر تور · نسخه چاپی رزرو</span>
+            </div>
+        </div>
+        <div>
+            <div class="doc-kicker">سند رزرو</div>
+            <h2 class="doc-title">@if(tour_kind == 'one_day' || tour_kind == 'abs_oneDay' || tour_kind == 'oneDay')واچر تور یک‌روزه@elseif(tour_kind == 'international' || tour_kind == 'abs_int')واچر تور خارجی@elseواچر تور داخلی@endif</h2>
+            <div class="status">{{ status_label ?? status ?? 'صادر شده' }}</div>
+        </div>
+    </div>
+    <table class="meta">
+        <tr>
+            <td>
+                <div class="meta-card">
+                    <table class="meta-grid">
+                        <tr>
+                            <td><span class="lbl">کد رزرو</span><span class="val ltr">{{ re_code }}</span></td>
+                            <td><span class="lbl">شماره فاکتور</span><span class="val ltr">{{ invoice_number ?? '—' }}</span></td>
+                            <td><span class="lbl">وضعیت پرداخت</span><span class="val">{{ payment_status_label ?? '—' }}</span></td>
+                            <td><span class="lbl">تاریخ صدور</span><span class="val">@if(issue_date_label){{ issue_date_label | digits }}@elseif(issue_date){{ issue_date | jdate('Y/m/d') | digits }}@else{{ now() | jdate('Y/m/d') | digits }}@endif</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+            <td class="qr">{{ re_code | qr }}<div class="code">{{ re_code }}</div></td>
+        </tr>
+    </table>
+    <div class="hero">
+        <span class="chip">{{ passenger_count ?? count(passengers ?? []) | digits }} نفر</span>
+        <h1>{{ subject ?? tour_name }}</h1>
+        <div>{{ origin ?? '—' }} ← {{ destination ?? '—' }}</div>
+    </div>
+    <table class="facts">
+        <tr>
+            <td><span class="lbl">حرکت</span><strong>@if(date_start_label){{ date_start_label | digits }}@elseif(date_start){{ date_start | jdate('Y/m/d') | digits }}@else —@endif</strong></td>
+            <td><span class="lbl">بازگشت</span><strong>@if(date_end_label){{ date_end_label | digits }}@elseif(date_end){{ date_end | jdate('Y/m/d') | digits }}@else —@endif</strong></td>
+            <td><span class="lbl">مدت</span><strong>@if(duration != null){{ duration | digits }} شب@else —@endif</strong></td>
+            <td><span class="lbl">حمل‌ونقل</span><strong>{{ transportation_label ?? transportation ?? '—' }}</strong></td>
+            <td><span class="lbl">سرپرست</span><strong>{{ leader_name ?? ((name_leader ?? '') . ' ' . (family_leader ?? '')) }}</strong></td>
+            <td><span class="lbl">تماس</span><strong class="ltr">{{ cell ?? '—' }}</strong></td>
+        </tr>
+    </table>
+
+    <div class="section">رفت و برگشت</div>
+    <table class="two">
+        <tr>
+            <td>
+                <span class="lbl">حرکت</span>
+                <div>{{ company_departure ?? '—' }}</div>
+                <div>ساعت {{ (time_departure ?? '—') | digits }}</div>
+            </td>
+            <td>
+                <span class="lbl">بازگشت</span>
+                <div>{{ company_back ?? '—' }}</div>
+                <div>ساعت {{ (time_back ?? '—') | digits }}</div>
+            </td>
+        </tr>
+    </table>
+
+    @if(count(segments ?? []) > 0)
+    <div class="section">پروازها و مسیرها</div>
+    <table class="data">
+        <thead><tr><th>جهت</th><th>از</th><th>به</th><th>تاریخ</th><th>ساعت</th><th>شرکت</th><th>شماره پرواز</th></tr></thead>
+        <tbody>
+        @foreach($segments as $segment)
+        <tr>
+            <td>@if(segment.direction == 'return')برگشت@else رفت@endif</td>
+            <td>{{ segment.from_city_name ?? segment.from ?? '—' }}</td>
+            <td>{{ segment.to_city_name ?? segment.to ?? '—' }}</td>
+            <td>@if(segment.depart_date_label){{ segment.depart_date_label | digits }}@elseif(segment.depart_date){{ segment.depart_date | jdate('Y/m/d') | digits }}@else —@endif</td>
+            <td class="num">{{ (segment.depart_time ?? '—') | digits }}</td>
+            <td>{{ segment.airline ?? '—' }}</td>
+            <td class="ltr">{{ segment.flight_number ?? '—' }}</td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+
+    @if(hotel_name ?? final_hotel_name)
+    <div class="section">اقامت داخل تور</div>
+    <div class="card">
+        <strong>{{ hotel_name ?? final_hotel_name }}</strong>
+        @if(hotel_rate) · {{ hotel_rate | digits }} ستاره@endif
+        @if(count(rooms ?? []) > 0)
+        <table class="data">
+            <thead><tr><th>اتاق</th><th>پذیرایی</th></tr></thead>
+            <tbody>
+            @foreach($rooms as $room)
+            <tr><td>{{ room.type ?? room.name ?? 'اتاق' }}</td><td>{{ room.board ?? room.board_label ?? '—' }}</td></tr>
+            @endforeach
+            </tbody>
+        </table>
+        @elseif(name_rooms)
+        <div>{{ name_rooms }}</div>
+        @endif
+    </div>
+    @endif
+
+    @if(count(days ?? []) > 0)
+    <div class="section">برنامه روزانه</div>
+    @foreach($days as $day)
+    <div class="card"><strong>روز {{ (day.day_number ?? loop.iteration) | digits }} — {{ day.title ?? '' }}</strong><div>{{ day.description ?? '' }}</div>@if(day.meals)<div>وعده: {{ day.meals }}</div>@endif</div>
+    @endforeach
+    @endif
+
+    @if(insurance.plan ?? insurance.subject)
+    <div class="keep">
+        <div class="section">بیمه همراه تور</div>
+        <div class="card">
+            <strong>{{ insurance.plan ?? insurance.subject }}</strong>
+            @if(insurance.policy_number)<div>شماره بیمه‌نامه: <span class="ltr">{{ insurance.policy_number }}</span></div>@endif
+            @if(insurance.coverage)<div>{{ insurance.coverage }}</div>@endif
+            @if(insurance.destination)<div>مقصد: {{ insurance.destination }}</div>@endif
+        </div>
+    </div>
+    @endif
+
+    @if(services)
+    <div class="section">خدمات</div>
+    <div class="card">{{ services }}</div>
+    @endif
+
+    <div class="section">مسافران</div>
+    <table class="data">
+        <thead><tr><th class="num">#</th><th>نام</th><th>گروه سنی</th><th>کد ملی</th></tr></thead>
+        <tbody>
+        @if(count(passengers ?? []) > 0)
+            @foreach($passengers as $passenger)
+            <tr>
+                <td class="num">{{ loop.iteration | digits }}</td>
+                <td>{{ passenger.name ?? ((passenger.first_name ?? passenger.firstName ?? '') . ' ' . (passenger.last_name ?? passenger.lastName ?? '')) }}</td>
+                <td>{{ passenger.age_group_label ?? passenger.rang_age ?? passenger.rangAge ?? '—' }}</td>
+                <td class="ltr">{{ passenger.national_id ?? passenger.code_meli ?? passenger.codeMeli ?? '—' }}</td>
+            </tr>
+            @endforeach
+        @else
+            <tr><td class="num">۱</td><td>{{ leader_name ?? ((name_leader ?? '') . ' ' . (family_leader ?? '')) }}</td><td>سرپرست</td><td class="ltr">{{ code_meli ?? '—' }}</td></tr>
+        @endif
+        </tbody>
+    </table>
+
+    <div class="section">مبلغ</div>
+    <table class="money" style="width:100%;border-collapse:collapse;">
+        @if((prepayment ?? 0) > 0)<tr><td>پیش‌پرداخت</td><td class="amt">{{ prepayment | number | digits }} {{ currency ?? 'ریال' }}</td></tr>@endif
+        @if(price_2)<tr><td>مبلغ ارزی</td><td class="amt">{{ price_2 | number | digits }} {{ currency_2 ?? '' }}</td></tr>@endif
+        @if(payment.transaction_id)<tr><td>شناسه پرداخت</td><td class="amt">{{ payment.transaction_id }}</td></tr>@endif
+        <tr class="grand"><td>مبلغ کل</td><td class="amt">{{ (total_price ?? price ?? 0) | number | digits }} {{ currency ?? 'ریال' }}</td></tr>
+    </table>
+    @if(guide_name ?? guide_phone)
+    <div class="card" style="margin-top:8px;"><span class="lbl">راهنما / لیدر</span>{{ guide_name ?? '' }} <span class="ltr">{{ guide_phone ?? '' }}</span></div>
+    @endif
+    @if(count(rules ?? []) > 0)<div class="rules"><strong>قوانین</strong><ul>@foreach($rules as $rule)<li>{{ rule }}</li>@endforeach</ul></div>@endif
+    @if(notes)<div class="note">{{ notes }}</div>@endif
+</div>
+</body>
+</html>

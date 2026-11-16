@@ -13,6 +13,7 @@ class TemplateSeeder extends Seeder
     public function run(): void
     {
         $this->seedTravelDocuments();
+        $this->seedShowAbsDocuments();
         $this->seedInvoice();
         $this->seedTourItinerary();
     }
@@ -36,6 +37,79 @@ class TemplateSeeder extends Seeder
             'قالب مشترک واچر هتل، اقامتگاه و ویلا. عنوان با accommodation_type عوض می‌شود.',
         );
         $this->seedFlightTicket();
+    }
+
+    /**
+     * Upsert the show_abs / reservation-v3 documents (tour, insurance, visa,
+     * CIP, and the mixed reservation sheet). Safe to run from a migration.
+     */
+    public function seedShowAbsDocuments(): void
+    {
+        $this->seedDocument(
+            'tour-voucher',
+            'واچر تور',
+            'tour',
+            'واچر تور نسخه ۳ (داخلی، خارجی، یک‌روزه) با اقامت، پرواز و بیمهٔ همراه.',
+            'tour-voucher.html',
+            TravelDocumentCatalog::tourVoucherVariables(),
+        );
+        $this->seedDocument(
+            'insurance-voucher',
+            'واچر بیمه',
+            'insurance',
+            'بیمه‌نامهٔ مسافرتی رزرو abs_insure.',
+            'insurance-voucher.html',
+            TravelDocumentCatalog::insuranceVariables(),
+        );
+        $this->seedDocument(
+            'visa-voucher',
+            'واچر ویزا',
+            'visa',
+            'سند خدمات ویزا برای رزرو abs_visa.',
+            'visa-voucher.html',
+            TravelDocumentCatalog::visaVariables(),
+        );
+        $this->seedDocument(
+            'cip-voucher',
+            'واچر CIP',
+            'cip',
+            'واچر تشریفات فرودگاهی. جدا از show_abs؛ نوع‌های cip_* .',
+            'cip-voucher.html',
+            TravelDocumentCatalog::cipVariables(),
+        );
+        $this->seedDocument(
+            'reservation-document',
+            'سند رزرو',
+            'reservation',
+            'سند ترکیبی برای کنسلی، نوع ناشناخته، یا سبد چندخدمتی که تور واحد نیست.',
+            'reservation-document.html',
+            TravelDocumentCatalog::reservationDocumentVariables(),
+        );
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $variables
+     */
+    private function seedDocument(string $slug, string $name, string $category, string $description, string $htmlFile, array $variables): void
+    {
+        $template = Template::query()->updateOrCreate(
+            ['slug' => $slug],
+            [
+                'name' => $name,
+                'category' => $category,
+                'description' => $description,
+                'html' => TravelDocumentCatalog::html($htmlFile),
+                'footer_html' => TravelDocumentCatalog::footer(),
+                'is_active' => true,
+                'locale' => 'fa',
+                'page_size' => 'A4',
+                'orientation' => 'portrait',
+                'margins' => ['top' => 16, 'right' => 10, 'bottom' => 16, 'left' => 10],
+                'pdf_options' => ['print_background' => true, 'scale' => 1.0, 'display_header_footer' => true],
+            ],
+        );
+
+        $this->syncVariables($template, $variables);
     }
 
     private function seedAccommodationVoucher(string $slug, string $name, string $category, string $description): void

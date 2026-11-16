@@ -1,0 +1,78 @@
+{
+  "re_code": "42764",
+  "subject": "تور کیش نوروز",
+  "tour_kind": "abs_dom",
+  "status_label": "فاکتور شده",
+  "payment_status_label": "پرداخت شده",
+  "invoice_number": "8842764",
+  "issue_date_label": "۲۵ آبان ۱۴۰۵",
+  "leader_name": "مهدی کرمی",
+  "code_meli": "0087654321",
+  "cell": "09121234567",
+  "passenger_count": 3,
+  "origin": "تهران",
+  "destination": "کیش",
+  "date_start_label": "۱ فروردین ۱۴۰۶",
+  "date_end_label": "۵ فروردین ۱۴۰۶",
+  "duration": 4,
+  "transportation_label": "هوایی",
+  "company_departure": "ماهان",
+  "time_departure": "08:40",
+  "company_back": "ماهان",
+  "time_back": "19:15",
+  "segments": [
+    {
+      "direction": "outbound",
+      "from_city_name": "تهران",
+      "to_city_name": "کیش",
+      "depart_date_label": "۱ فروردین ۱۴۰۶",
+      "depart_time": "08:40",
+      "airline": "ماهان",
+      "flight_number": "W5 1120"
+    },
+    {
+      "direction": "return",
+      "from_city_name": "کیش",
+      "to_city_name": "تهران",
+      "depart_date_label": "۵ فروردین ۱۴۰۶",
+      "depart_time": "19:15",
+      "airline": "ماهان",
+      "flight_number": "W5 1121"
+    }
+  ],
+  "final_hotel_name": "هتل داریوش کیش",
+  "hotel_rate": 5,
+  "rooms": [
+    {"type": "دبل", "board_label": "صبحانه", "confirmation_code": "RM-SUP-9"}
+  ],
+  "name_rooms": "دبل - صبحانه",
+  "days": [
+    {"day_number": 1, "title": "ورود به کیش", "description": "ترانسفر فرودگاه و استقرار در هتل.", "meals": "شام"},
+    {"day_number": 2, "title": "گشت جزیره", "description": "بازدید از کشتی یونانی و ساحل.", "meals": "صبحانه"}
+  ],
+  "insurance": {
+    "plan": "بیمه مسافرتی داخلی",
+    "policy_number": "INS-42764",
+    "coverage": "هزینه درمان اضطراری تا سقف طرح",
+    "destination": "کیش"
+  },
+  "services": "گشت جزیره / ترانسفر رفت و برگشت فرودگاه",
+  "passengers": [
+    {"firstName": "مهدی", "lastName": "کرمی", "rangAge": "adult", "age_group_label": "بزرگسال", "codeMeli": "0087654321"},
+    {"firstName": "نگار", "lastName": "کرمی", "rangAge": "adult", "age_group_label": "بزرگسال", "codeMeli": "0087654322"},
+    {"firstName": "آراد", "lastName": "کرمی", "rangAge": "child", "age_group_label": "کودک", "codeMeli": "0087654323"}
+  ],
+  "price": 186500000,
+  "prepayment": 50000000,
+  "price_2": 420,
+  "currency_2": "$",
+  "currency": "ریال",
+  "payment": {"transaction_id": "PAY-42764"},
+  "guide_name": "رضا نوری",
+  "guide_phone": "09130001122",
+  "rules": ["حضور ۴۵ دقیقه قبل از پرواز در فرودگاه الزامی است."],
+  "notes": "اتاق مشرف به دریا در صورت موجودی.",
+  "supplier_code": "tour_hub",
+  "confirmation_code": "SUP-TOUR-1",
+  "hub_public_id": "tb_91aa"
+}

@@ -1,0 +1,30 @@
+{
+  "re_code": "CIP-2044",
+  "subject": "تشریفات خروجی داخلی",
+  "status_label": "صادر شده",
+  "invoice_number": "902044",
+  "airport": "فرودگاه شهید بهشتی اصفهان",
+  "service_type": "cip_dom_to_dom_exit",
+  "service_label": "خروجی داخلی",
+  "origin": "اصفهان",
+  "destination": "مشهد",
+  "airline": "ایران‌ایر",
+  "flight_number": "IR 455",
+  "flight_date_label": "۸ آذر ۱۴۰۵",
+  "flight_time": "06:20",
+  "leader_name": "الهام رضایی",
+  "cell": "09134567000",
+  "passengers": [
+    {"firstName": "الهام", "lastName": "رضایی", "codeMeli": "1270001111", "role": "leader"},
+    {"firstName": "نیما", "lastName": "رضایی", "codeMeli": "1270001112"}
+  ],
+  "orders": [
+    {"title": "همراه مشایعت", "count": 1, "total": 2500000}
+  ],
+  "price": 14500000,
+  "currency": "ریال",
+  "notes": "دو ساعت قبل از پرواز در جایگاه تشریفات حاضر شوید.",
+  "supplier_code": "cip_hub",
+  "confirmation_code": "CIP-SUP-8",
+  "hub_public_id": "cp_77ee"
+}

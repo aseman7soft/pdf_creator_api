@@ -265,8 +265,8 @@ sudo -u www-data php artisan db:seed --force
 - `SettingsSeeder` → تنظیمات پیش‌فرض
 - `AdminUserSeeder` → کاربر مدیر (`ADMIN_EMAIL`، پیش‌فرض `admin@tarahsite.net`)؛ اگر `ADMIN_PASSWORD` خالی باشد رمز تصادفی **یک‌بار** در خروجی چاپ می‌شود — آن را فوراً در جای امن ذخیره و سپس رمز را از پنل تغییر دهید. اگر `ADMIN_PASSWORD` مقدار داشته باشد همان رمز تنظیم می‌شود (و در اجرای مجدد seed فقط وقتی رمز عوض شود، به‌روزرسانی می‌شود).
 - `AssetSeeder` → فونت‌های Vazirmatn روی دیسک خصوصی
-- `TemplateSeeder` → قالب‌های `hotel-voucher`، `accommodation-voucher`، `flight-ticket`، `invoice-standard`، `tour-itinerary`
-- مهاجرت `2026_11_16_120000_seed_travel_document_templates` همان واچر اقامت و بلیط را هنگام `migrate` (از جمله دیپلوی CI) upsert می‌کند. `hotel-voucher` با payload قبلی سازگار می‌ماند.
+- `TemplateSeeder` → قالب‌های `hotel-voucher`، `accommodation-voucher`، `flight-ticket`، `tour-voucher`، `insurance-voucher`، `visa-voucher`، `cip-voucher`، `reservation-document`، `invoice-standard`، `tour-itinerary`
+- مهاجرت `2026_11_16_120000_seed_travel_document_templates` واچر اقامت و بلیط را هنگام `migrate` upsert می‌کند. `2026_11_16_130000_reseed_travel_documents_hide_supplier` همان قالب‌ها را بدون کد تأمین‌کننده دوباره upsert می‌کند. `2026_11_16_140000_seed_show_abs_reservation_templates` قالب‌های تور، بیمه، ویزا، CIP و سند ترکیبی را اضافه می‌کند. مهاجرت‌های قبلی را ویرایش نکنید.
 - `DemoApiProjectSeeder` → فقط در `local`/`testing`؛ در production پروژهٔ نمایشی ساخته **نمی‌شود**.
 
 > ### ⚠️ seed کامل را دوباره در production اجرا نکنید

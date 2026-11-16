@@ -127,4 +127,144 @@ final class TravelDocumentCatalog
             ['name' => 'agency_name', 'label' => 'نام آژانس', 'type' => 'string', 'is_required' => false, 'default_value' => 'آژانس مسافرتی آسمان هفتم', 'validation_rules' => 'max:120', 'sort_order' => 37],
         ];
     }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function tourVoucherVariables(): array
+    {
+        return array_merge(self::reservationCoreVariables(), [
+            ['name' => 'tour_kind', 'label' => 'نوع تور', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.type: abs_dom | abs_int | abs_oneDay. مقدار قدیمی oneDay هم تور یک‌روزه است.', 'validation_rules' => 'max:40', 'sort_order' => 20],
+            ['name' => 'tour_name', 'label' => 'نام تور', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.tour_name. اگر subject خالی باشد عنوان از این فیلد است.', 'validation_rules' => 'max:180', 'sort_order' => 21],
+            ['name' => 'origin', 'label' => 'مبدأ', 'type' => 'string', 'is_required' => false, 'description' => 'city_name(initialPoint_id) یا initialPoint.', 'validation_rules' => 'max:80', 'sort_order' => 22],
+            ['name' => 'destination', 'label' => 'مقصد', 'type' => 'string', 'is_required' => false, 'description' => 'city_name(cityCode) یا city.', 'validation_rules' => 'max:80', 'sort_order' => 23],
+            ['name' => 'date_start', 'label' => 'تاریخ حرکت (میلادی)', 'type' => 'date', 'is_required' => false, 'description' => 'dateStartTour به صورت Y-m-d.', 'sort_order' => 24],
+            ['name' => 'date_end', 'label' => 'تاریخ بازگشت (میلادی)', 'type' => 'date', 'is_required' => false, 'description' => 'dateEndTour به صورت Y-m-d.', 'sort_order' => 25],
+            ['name' => 'date_start_label', 'label' => 'تاریخ حرکت شمسی', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:80', 'sort_order' => 26],
+            ['name' => 'date_end_label', 'label' => 'تاریخ بازگشت شمسی', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:80', 'sort_order' => 27],
+            ['name' => 'duration', 'label' => 'مدت (شب)', 'type' => 'integer', 'is_required' => false, 'description' => 'reservations.duration', 'min_value' => 0, 'sort_order' => 28],
+            ['name' => 'transportation', 'label' => 'کد حمل‌ونقل', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.transportation (air و مشابه).', 'validation_rules' => 'max:40', 'sort_order' => 29],
+            ['name' => 'transportation_label', 'label' => 'حمل‌ونقل', 'type' => 'string', 'is_required' => false, 'description' => 'خروجی transportation_fa().', 'validation_rules' => 'max:40', 'sort_order' => 30],
+            ['name' => 'company_departure', 'label' => 'شرکت رفت', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:80', 'sort_order' => 31],
+            ['name' => 'time_departure', 'label' => 'ساعت رفت', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:20', 'sort_order' => 32],
+            ['name' => 'company_back', 'label' => 'شرکت برگشت', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:80', 'sort_order' => 33],
+            ['name' => 'time_back', 'label' => 'ساعت برگشت', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:20', 'sort_order' => 34],
+            ['name' => 'segments', 'label' => 'سگمنت‌های پرواز', 'type' => 'array', 'is_required' => false, 'description' => 'reservation_flight_segments: direction (outbound|return), from_city_name, to_city_name, depart_date یا depart_date_label, depart_time, airline, flight_number. شناسه تأمین‌کننده چاپ نمی‌شود.', 'sort_order' => 35],
+            ['name' => 'hotel_name', 'label' => 'هتل تور', 'type' => 'string', 'is_required' => false, 'description' => 'finalHotelName. اگر خالی باشد final_hotel_name و بعد hotelName.', 'validation_rules' => 'max:180', 'sort_order' => 36],
+            ['name' => 'final_hotel_name', 'label' => 'نام هتل ذخیره‌شده', 'type' => 'string', 'is_required' => false, 'description' => 'نام ستون reservations.finalHotelName.', 'validation_rules' => 'max:180', 'sort_order' => 37],
+            ['name' => 'hotel_rate', 'label' => 'درجه هتل', 'type' => 'integer', 'is_required' => false, 'description' => 'reservations.hotelRate', 'min_value' => 0, 'max_value' => 7, 'sort_order' => 38],
+            ['name' => 'rooms', 'label' => 'اتاق‌ها', 'type' => 'array', 'is_required' => false, 'description' => 'read_typeRooms(nameRooms): type, board یا board_label (board_name). confirmation_code پذیرفته می‌شود ولی چاپ نمی‌شود.', 'sort_order' => 39],
+            ['name' => 'name_rooms', 'label' => 'متن اتاق', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.nameRooms اگر rooms ساخته نشود.', 'validation_rules' => 'max:500', 'sort_order' => 40],
+            ['name' => 'days', 'label' => 'برنامه روزانه', 'type' => 'array', 'is_required' => false, 'description' => 'اختیاری. نسخه ۳ رزرو ردیف روز ذخیره نمی‌کند. {day_number, title, description, meals}', 'sort_order' => 41],
+            ['name' => 'insurance', 'label' => 'بیمه همراه', 'type' => 'object', 'is_required' => false, 'description' => 'فقط اگر بیمه جدا به تور وصل است: {plan|subject, policy_number, coverage, destination}. ستون بیمه روی خود ردیف تور نیست.', 'sort_order' => 42],
+            ['name' => 'services', 'label' => 'خدمات', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.services = city_tour + " / " + transfer.', 'validation_rules' => 'max:500', 'sort_order' => 43],
+            ['name' => 'guide_name', 'label' => 'نام راهنما', 'type' => 'string', 'is_required' => false, 'description' => 'در نسخه ۳ ستون راهنما نیست؛ فقط اگر سایت مقدار دارد بفرستید.', 'validation_rules' => 'max:120', 'sort_order' => 44],
+            ['name' => 'guide_phone', 'label' => 'تلفن راهنما', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:40', 'sort_order' => 45],
+            ['name' => 'rules', 'label' => 'قوانین', 'type' => 'array', 'is_required' => false, 'description' => 'رشته‌های آماده، مثلاً متن اصلاحیه قرارداد. چاپ شناسه تأمین‌کننده ممنوع.', 'sort_order' => 46],
+            ['name' => 'price_2', 'label' => 'مبلغ ارزی', 'type' => 'decimal', 'is_required' => false, 'min_value' => 0, 'sort_order' => 47],
+            ['name' => 'currency_2', 'label' => 'ارز دوم', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.currency_2. پیش‌فرض استراتژی دلار است.', 'validation_rules' => 'max:10', 'sort_order' => 48],
+        ]);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function insuranceVariables(): array
+    {
+        return array_merge(self::reservationCoreVariables(), [
+            ['name' => 'plan', 'label' => 'طرح بیمه', 'type' => 'string', 'is_required' => false, 'description' => 'اگر خالی باشد subject (عنوان نسخه ۳) چاپ می‌شود.', 'validation_rules' => 'max:180', 'sort_order' => 20],
+            ['name' => 'policy_number', 'label' => 'شماره بیمه‌نامه', 'type' => 'string', 'is_required' => false, 'description' => 'شماره‌ای که مسافر باید داشته باشد. اگر نیست re_code. شناسه تأمین‌کننده را اینجا نگذارید.', 'validation_rules' => 'max:80', 'sort_order' => 21],
+            ['name' => 'destination', 'label' => 'مقصد', 'type' => 'string', 'is_required' => false, 'description' => 'city یا city_name(cityCode). استراتژی بیمه مقصد را اجباری نمی‌کند.', 'validation_rules' => 'max:80', 'sort_order' => 22],
+            ['name' => 'date_start', 'label' => 'شروع پوشش (میلادی)', 'type' => 'date', 'is_required' => false, 'sort_order' => 23],
+            ['name' => 'date_end', 'label' => 'پایان پوشش (میلادی)', 'type' => 'date', 'is_required' => false, 'sort_order' => 24],
+            ['name' => 'date_start_label', 'label' => 'شروع پوشش شمسی', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:80', 'sort_order' => 25],
+            ['name' => 'date_end_label', 'label' => 'پایان پوشش شمسی', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:80', 'sort_order' => 26],
+            ['name' => 'coverage', 'label' => 'شرح پوشش', 'type' => 'text', 'is_required' => false, 'description' => 'متن آماده. نسخه ۳ ستون پوشش جدا ندارد؛ از services یا یادداشت بسازید.', 'validation_rules' => 'max:2000', 'sort_order' => 27],
+            ['name' => 'coverage_items', 'label' => 'بندهای پوشش', 'type' => 'array', 'is_required' => false, 'description' => 'رشته‌ها.', 'sort_order' => 28],
+            ['name' => 'insured', 'label' => 'بیمه‌شدگان', 'type' => 'array', 'is_required' => false, 'description' => 'اگر خالی باشد passengers و بعد سرپرست. name یا firstName/lastName، codeMeli، birthday یا birthday_label.', 'sort_order' => 29],
+        ]);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function visaVariables(): array
+    {
+        return array_merge(self::reservationCoreVariables(), [
+            ['name' => 'visa_type', 'label' => 'نوع ویزا', 'type' => 'string', 'is_required' => false, 'description' => 'ستون جدا در نسخه ۳ نیست. عنوان اصلی subject است.', 'validation_rules' => 'max:80', 'sort_order' => 20],
+            ['name' => 'case_number', 'label' => 'شماره پرونده', 'type' => 'string', 'is_required' => false, 'description' => 'اگر خالی باشد re_code. شماره پرونده تأمین‌کننده را نفرستید.', 'validation_rules' => 'max:80', 'sort_order' => 21],
+            ['name' => 'destination', 'label' => 'مقصد', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:80', 'sort_order' => 22],
+            ['name' => 'travel_date', 'label' => 'تاریخ سفر (میلادی)', 'type' => 'date', 'is_required' => false, 'description' => 'dateStartTour اگر پر باشد. استراتژی ویزا این تاریخ را ست نمی‌کند.', 'sort_order' => 23],
+            ['name' => 'travel_date_label', 'label' => 'تاریخ سفر شمسی', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:80', 'sort_order' => 24],
+            ['name' => 'rules', 'label' => 'مدارک و قوانین', 'type' => 'array', 'is_required' => false, 'sort_order' => 25],
+        ]);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function cipVariables(): array
+    {
+        return array_merge(self::reservationCoreVariables(), [
+            ['name' => 'airport', 'label' => 'فرودگاه', 'type' => 'string', 'is_required' => false, 'description' => 'متن آماده. نمونه فعلی سایت: تشریفات شهید بهشتی اصفهان.', 'validation_rules' => 'max:120', 'sort_order' => 20],
+            ['name' => 'service_type', 'label' => 'کد نوع CIP', 'type' => 'string', 'is_required' => false, 'description' => 'cip_dom_to_dom_exit | cip_dom_to_int | cip_int_to_dom | cip_dom_to_dom_inter', 'validation_rules' => 'max:40', 'sort_order' => 21],
+            ['name' => 'service_label', 'label' => 'نوع خدمت', 'type' => 'string', 'is_required' => false, 'description' => 'flyType(type) یا برچسب فارسی.', 'validation_rules' => 'max:80', 'sort_order' => 22],
+            ['name' => 'origin', 'label' => 'مبدأ', 'type' => 'string', 'is_required' => false, 'description' => 'initialPoint', 'validation_rules' => 'max:80', 'sort_order' => 23],
+            ['name' => 'destination', 'label' => 'مقصد', 'type' => 'string', 'is_required' => false, 'description' => 'city', 'validation_rules' => 'max:80', 'sort_order' => 24],
+            ['name' => 'airline', 'label' => 'ایرلاین', 'type' => 'string', 'is_required' => false, 'description' => 'company_departure برای خروج، company_back برای ورود.', 'validation_rules' => 'max:80', 'sort_order' => 25],
+            ['name' => 'flight_number', 'label' => 'شماره پرواز', 'type' => 'string', 'is_required' => false, 'description' => 'fly_number', 'validation_rules' => 'max:20', 'sort_order' => 26],
+            ['name' => 'flight_date', 'label' => 'تاریخ پرواز (میلادی)', 'type' => 'date', 'is_required' => false, 'description' => 'checkInFly به صورت Y-m-d.', 'sort_order' => 27],
+            ['name' => 'flight_date_label', 'label' => 'تاریخ پرواز شمسی', 'type' => 'string', 'is_required' => false, 'validation_rules' => 'max:80', 'sort_order' => 28],
+            ['name' => 'flight_time', 'label' => 'ساعت پرواز', 'type' => 'string', 'is_required' => false, 'description' => 'time_departure یا time_back بسته به نوع.', 'validation_rules' => 'max:20', 'sort_order' => 29],
+            ['name' => 'orders', 'label' => 'سرویس مازاد', 'type' => 'array', 'is_required' => false, 'description' => '{title, count, price, total}. مبلغ هر ردیف را آماده بفرستید.', 'sort_order' => 30],
+        ]);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function reservationDocumentVariables(): array
+    {
+        return array_merge(self::reservationCoreVariables(), [
+            ['name' => 'type_label', 'label' => 'برچسب نوع', 'type' => 'string', 'is_required' => false, 'description' => 'abs_reserve_kind_label(type). برای کنسلی: کنسلی رزرو.', 'validation_rules' => 'max:80', 'sort_order' => 20],
+            ['name' => 'items', 'label' => 'قلم‌ها', 'type' => 'array', 'is_required' => false, 'description' => '{kind, kind_label, title, rows:[{label, value}]}. value باید متن آماده باشد. کد تأمین‌کننده را در rows نگذارید.', 'sort_order' => 21],
+        ]);
+    }
+
+    /**
+     * Fields shared by the show_abs documents. Amounts are display-ready.
+     * V3 stores reservations.price in rial; send currency «ریال» and do not convert.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private static function reservationCoreVariables(): array
+    {
+        return [
+            ['name' => 're_code', 'label' => 'کد رزرو', 'type' => 'string', 'is_required' => true, 'description' => 'reservations.re_code. همین مقدار QR می‌شود.', 'validation_rules' => 'max:40', 'sort_order' => 1],
+            ['name' => 'subject', 'label' => 'عنوان', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.subject', 'validation_rules' => 'max:180', 'sort_order' => 2],
+            ['name' => 'status', 'label' => 'وضعیت', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.status مثل f_invoice یا payed.', 'validation_rules' => 'max:40', 'sort_order' => 3],
+            ['name' => 'status_label', 'label' => 'برچسب وضعیت', 'type' => 'string', 'is_required' => false, 'description' => 'status_reserve(status)', 'validation_rules' => 'max:60', 'sort_order' => 4],
+            ['name' => 'payment_status_label', 'label' => 'وضعیت پرداخت', 'type' => 'string', 'is_required' => false, 'description' => 'status_pay(invoice.status)', 'validation_rules' => 'max:60', 'sort_order' => 5],
+            ['name' => 'invoice_number', 'label' => 'شماره فاکتور', 'type' => 'string', 'is_required' => false, 'description' => 'invoice.invoice_number', 'validation_rules' => 'max:40', 'sort_order' => 6],
+            ['name' => 'issue_date', 'label' => 'تاریخ صدور (میلادی)', 'type' => 'date', 'is_required' => false, 'sort_order' => 7],
+            ['name' => 'issue_date_label', 'label' => 'تاریخ صدور شمسی', 'type' => 'string', 'is_required' => false, 'description' => 'dateToJalali_date(created_at)', 'validation_rules' => 'max:80', 'sort_order' => 8],
+            ['name' => 'leader_name', 'label' => 'سرپرست', 'type' => 'string', 'is_required' => false, 'description' => 'nameLeader + familyLeader. اگر خالی باشد name_leader و family_leader چسبانده می‌شوند.', 'validation_rules' => 'max:160', 'sort_order' => 9],
+            ['name' => 'name_leader', 'label' => 'نام سرپرست', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.nameLeader', 'validation_rules' => 'max:80', 'sort_order' => 10],
+            ['name' => 'family_leader', 'label' => 'نام خانوادگی سرپرست', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.familyLeader', 'validation_rules' => 'max:80', 'sort_order' => 11],
+            ['name' => 'code_meli', 'label' => 'کد ملی سرپرست', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.codeMeli', 'validation_rules' => 'max:20', 'sort_order' => 12],
+            ['name' => 'cell', 'label' => 'موبایل', 'type' => 'string', 'is_required' => false, 'description' => 'reservations.cell', 'validation_rules' => 'max:20', 'sort_order' => 13],
+            ['name' => 'passenger_count', 'label' => 'تعداد مسافر', 'type' => 'integer', 'is_required' => false, 'description' => 'reservations.countPassenger', 'min_value' => 0, 'sort_order' => 14],
+            ['name' => 'passengers', 'label' => 'مسافران', 'type' => 'array', 'is_required' => false, 'description' => 'Passenger با role=passenger: firstName/first_name, lastName/last_name, rangAge/rang_age یا age_group_label, codeMeli/code_meli/national_id, age, passport.', 'sort_order' => 15],
+            ['name' => 'total_price', 'label' => 'مبلغ کل', 'type' => 'decimal', 'is_required' => false, 'description' => 'مبلغ نمایشی. برای نسخه ۳ همان reservations.price به ریال است. اگر خالی باشد price.', 'min_value' => 0, 'sort_order' => 16],
+            ['name' => 'price', 'label' => 'مبلغ رزرو', 'type' => 'decimal', 'is_required' => false, 'description' => 'reservations.price. در نسخه ۳ واحد ریال است.', 'min_value' => 0, 'sort_order' => 17],
+            ['name' => 'prepayment', 'label' => 'پیش‌پرداخت', 'type' => 'decimal', 'is_required' => false, 'description' => 'reservations.prepayment، هم‌واحد price.', 'min_value' => 0, 'sort_order' => 18],
+            ['name' => 'currency', 'label' => 'واحد پول', 'type' => 'string', 'is_required' => false, 'default_value' => 'ریال', 'validation_rules' => 'max:20', 'sort_order' => 19],
+            ['name' => 'payment', 'label' => 'پرداخت', 'type' => 'object', 'is_required' => false, 'description' => '{transaction_id: invoice.transaction_id, paid_at_label, status}.', 'sort_order' => 50],
+            ['name' => 'notes', 'label' => 'توضیحات', 'type' => 'text', 'is_required' => false, 'description' => 'note_for_passenger یا یادداشت مسافر.', 'validation_rules' => 'max:2000', 'sort_order' => 51],
+            ['name' => 'agency_name', 'label' => 'نام آژانس', 'type' => 'string', 'is_required' => false, 'default_value' => 'آژانس مسافرتی آسمان هفتم', 'validation_rules' => 'max:120', 'sort_order' => 52],
+            ['name' => 'supplier_code', 'label' => 'کد تأمین‌کننده', 'type' => 'string', 'is_required' => false, 'description' => 'پذیرفته می‌شود ولی چاپ نمی‌شود.', 'validation_rules' => 'max:80', 'sort_order' => 90],
+            ['name' => 'confirmation_code', 'label' => 'کد تأیید تأمین‌کننده', 'type' => 'string', 'is_required' => false, 'description' => 'پذیرفته می‌شود ولی چاپ نمی‌شود.', 'validation_rules' => 'max:80', 'sort_order' => 91],
+            ['name' => 'hub_public_id', 'label' => 'شناسه هاب', 'type' => 'string', 'is_required' => false, 'description' => 'شناسه سمت تأمین‌کننده. پذیرفته می‌شود ولی چاپ نمی‌شود.', 'validation_rules' => 'max:80', 'sort_order' => 92],
+        ];
+    }
 }

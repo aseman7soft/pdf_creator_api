@@ -1,0 +1,26 @@
+{
+  "re_code": "61018",
+  "subject": "ویزای توریستی دبی",
+  "visa_type": "۱۴ روزه یک‌بار ورود",
+  "case_number": "VISA-61018",
+  "status_label": "در حال پیگیری",
+  "invoice_number": "3361018",
+  "leader_name": "حسین عباسی",
+  "code_meli": "0023456789",
+  "cell": "09351230000",
+  "destination": "امارات",
+  "travel_date_label": "۱۸ آذر ۱۴۰۵",
+  "passenger_count": 2,
+  "passengers": [
+    {"firstName": "حسین", "lastName": "عباسی", "codeMeli": "0023456789", "passport": "A12345678"},
+    {"firstName": "مریم", "lastName": "عباسی", "codeMeli": "0023456790", "passport": "A12345679"}
+  ],
+  "price": 24000000,
+  "prepayment": 8000000,
+  "currency": "ریال",
+  "rules": ["پاسپورت باید حداقل ۶ ماه اعتبار داشته باشد."],
+  "notes": "پس از صدور، تصویر ویزا برای سرپرست ارسال می‌شود.",
+  "supplier_code": "visa_hub",
+  "confirmation_code": "VIS-SUP-3",
+  "hub_public_id": "vs_10cd"
+}

@@ -228,9 +228,87 @@ class SeededTemplatesRenderTest extends TestCase
         $this->assertStringContainsString('۲٬۵۰۰٬۰۰۰', $snapshotHtml);
     }
 
+    public function test_show_abs_reservation_templates_hide_supplier_codes(): void
+    {
+        $renderer = $this->app->make(TemplateRenderService::class);
+        $validator = $this->app->make(TemplateSchemaValidator::class);
+
+        $tour = $this->renderSample($renderer, $validator, 'tour-voucher', 'tour-voucher.json');
+        $this->assertStringContainsString('واچر تور داخلی', $tour);
+        $this->assertStringContainsString('تور کیش نوروز', $tour);
+        $this->assertStringContainsString('42764', $tour);
+        $this->assertStringContainsString('هتل داریوش کیش', $tour);
+        $this->assertStringContainsString('W5 1120', $tour);
+        $this->assertStringContainsString('بیمه مسافرتی داخلی', $tour);
+        $this->assertStringContainsString('INS-42764', $tour);
+        $this->assertStringContainsString('مهدی کرمی', $tour);
+        $this->assertStringContainsString('گشت جزیره', $tour);
+        $this->assertStringContainsString('رضا نوری', $tour);
+        $this->assertStringContainsString('۱۸۶٬۵۰۰٬۰۰۰', $tour);
+        $this->assertStringContainsString('<svg', $tour);
+        $this->assertStringNotContainsString('tour_hub', $tour);
+        $this->assertStringNotContainsString('SUP-TOUR-1', $tour);
+        $this->assertStringNotContainsString('tb_91aa', $tour);
+        $this->assertStringNotContainsString('RM-SUP-9', $tour);
+        $this->assertStringNotContainsString('تأمین‌کننده', $tour);
+
+        $insurance = $this->renderSample($renderer, $validator, 'insurance-voucher', 'insurance-voucher.json');
+        $this->assertStringContainsString('واچر بیمه', $insurance);
+        $this->assertStringContainsString('طرح طلایی ۳۰ روزه', $insurance);
+        $this->assertStringContainsString('INS-51002', $insurance);
+        $this->assertStringContainsString('سارا محمدی', $insurance);
+        $this->assertStringContainsString('کیان محمدی', $insurance);
+        $this->assertStringContainsString('۹٬۸۰۰٬۰۰۰', $insurance);
+        $this->assertStringNotContainsString('insure_hub', $insurance);
+        $this->assertStringNotContainsString('POL-SUP-77', $insurance);
+        $this->assertStringNotContainsString('in_44ab', $insurance);
+
+        $visa = $this->renderSample($renderer, $validator, 'visa-voucher', 'visa-voucher.json');
+        $this->assertStringContainsString('واچر ویزا', $visa);
+        $this->assertStringContainsString('ویزای توریستی دبی', $visa);
+        $this->assertStringContainsString('VISA-61018', $visa);
+        $this->assertStringContainsString('A12345678', $visa);
+        $this->assertStringContainsString('حسین عباسی', $visa);
+        $this->assertStringNotContainsString('visa_hub', $visa);
+        $this->assertStringNotContainsString('VIS-SUP-3', $visa);
+        $this->assertStringNotContainsString('vs_10cd', $visa);
+
+        $cip = $this->renderSample($renderer, $validator, 'cip-voucher', 'cip-voucher.json');
+        $this->assertStringContainsString('واچر تشریفات', $cip);
+        $this->assertStringContainsString('CIP-2044', $cip);
+        $this->assertStringContainsString('IR 455', $cip);
+        $this->assertStringContainsString('اصفهان', $cip);
+        $this->assertStringContainsString('همراه مشایعت', $cip);
+        $this->assertStringContainsString('الهام رضایی', $cip);
+        $this->assertStringNotContainsString('cip_hub', $cip);
+        $this->assertStringNotContainsString('CIP-SUP-8', $cip);
+        $this->assertStringNotContainsString('cp_77ee', $cip);
+
+        $mixed = $this->renderSample($renderer, $validator, 'reservation-document', 'reservation-document.json');
+        $this->assertStringContainsString('سند رزرو', $mixed);
+        $this->assertStringContainsString('کنسلی رزرو', $mixed);
+        $this->assertStringContainsString('70031', $mixed);
+        $this->assertStringContainsString('جریمه کنسلی مطابق قرارداد', $mixed);
+        $this->assertStringContainsString('بهروز نادری', $mixed);
+        $this->assertStringContainsString('0060000031', $mixed);
+        $this->assertStringContainsString('۱۲٬۰۰۰٬۰۰۰', $mixed);
+        $this->assertStringNotContainsString('cancel_hub', $mixed);
+        $this->assertStringNotContainsString('CX-SUP-1', $mixed);
+        $this->assertStringNotContainsString('cx_19ff', $mixed);
+    }
+
     /**
      * @return array<string, mixed>
      */
+    private function renderSample(TemplateRenderService $renderer, TemplateSchemaValidator $validator, string $slug, string $sample): string
+    {
+        $template = Template::query()->where('slug', $slug)->firstOrFail();
+        $html = $renderer->render($template, $validator->validate($template, $this->sample($sample)))->html;
+        $this->assertStringNotContainsString('asset://', $html);
+
+        return $html;
+    }
+
     private function sample(string $filename): array
     {
         $decoded = json_decode((string) file_get_contents(resource_path('templates/samples/'.$filename)), true);

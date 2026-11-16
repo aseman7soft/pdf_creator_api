@@ -1,0 +1,31 @@
+{
+  "re_code": "70031",
+  "subject": "اعلام خسارت کنسلی",
+  "type_label": "کنسلی رزرو",
+  "status_label": "فاکتور شده",
+  "invoice_number": "1170031",
+  "leader_name": "بهروز نادری",
+  "name_leader": "بهروز",
+  "family_leader": "نادری",
+  "cell": "09120000031",
+  "passengers": [
+    {"firstName": "بهروز", "lastName": "نادری", "codeMeli": "0060000031"}
+  ],
+  "items": [
+    {
+      "kind": "cancel",
+      "kind_label": "کنسلی",
+      "title": "تور مشهد — کد ۷۰۰۳۱",
+      "rows": [
+        {"label": "شرح", "value": "جریمه کنسلی مطابق قرارداد"},
+        {"label": "تاریخ اعلام", "value": "۱۶ آبان ۱۴۰۵"}
+      ]
+    }
+  ],
+  "price": 12000000,
+  "currency": "ریال",
+  "notes": "مبلغ خسارت اعلام‌شده پس از تأیید مالی قطعی است.",
+  "supplier_code": "cancel_hub",
+  "confirmation_code": "CX-SUP-1",
+  "hub_public_id": "cx_19ff"
+}
