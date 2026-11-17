@@ -228,6 +228,70 @@ class SeededTemplatesRenderTest extends TestCase
         $this->assertStringContainsString('۲٬۵۰۰٬۰۰۰', $snapshotHtml);
     }
 
+    public function test_flight_ticket_redesign_prints_one_page_per_passenger_segment_with_rule_boxes(): void
+    {
+        $renderer = $this->app->make(TemplateRenderService::class);
+        $validator = $this->app->make(TemplateSchemaValidator::class);
+        $flight = Template::query()->where('slug', 'flight-ticket')->firstOrFail();
+
+        $segment = [
+            'direction' => 'outbound',
+            'airline' => 'هواپیمایی یزد',
+            'airline_code' => 'DZD',
+            'flight_number' => 'DZD9443',
+            'aircraft' => 'BAe 146',
+            'from_city_name' => 'تهران',
+            'from_airport' => 'فرودگاه بین‌المللی مهرآباد',
+            'from_code' => 'THR',
+            'to_city_name' => 'یزد',
+            'to_airport' => 'فرودگاه شهید صدوقی',
+            'to_code' => 'AZD',
+            'depart_date' => '2026-11-29',
+            'depart_date_label' => 'یکشنبه، 8 آذر، 1405',
+            'depart_time' => '15:20',
+            'arrival_time' => '16:35',
+            'baggage' => '10 کیلوگرم',
+        ];
+        $data = [
+            'pnr' => '42809320',
+            're_code' => '42809320',
+            'hub_public_id' => 'FH-HIDDEN-1',
+            'supplier_code' => 'SUP-HIDDEN-1',
+            'trip_type' => 'round_trip',
+            'passengers' => [
+                ['firstName' => 'نمونه', 'lastName' => 'یک', 'codeMeli' => '0012345678', 'age_group_label' => 'بزرگسال'],
+                ['firstName' => 'نمونه', 'lastName' => 'دو', 'codeMeli' => '0012345679', 'age_group_label' => 'کودک'],
+            ],
+            'segments' => [$segment, array_merge($segment, ['direction' => 'return', 'flight_number' => 'DZD9444', 'from_city_name' => 'یزد', 'to_city_name' => 'تهران'])],
+            'total_price' => 126280000,
+            'currency' => 'ریال',
+            'baggage_rules' => ['پرواز DZD9443: بار مجاز 10 کیلوگرم'],
+            'cancellation_policies' => [
+                ['description' => 'از لحظه صدور تا 72 ساعت مانده به پرواز', 'adultPenaltyPercentage' => 30, 'childPenaltyPercentage' => 30, 'infantPenaltyPercentage' => 30],
+            ],
+            'general_rules' => ['نوع نرخ: سیستمی'],
+        ];
+
+        $html = $renderer->render($flight, $validator->validate($flight, $data))->html;
+
+        $this->assertSame(4, substr_count($html, '<div class="ticket">'));
+        $this->assertStringContainsString('بلیط رفت', $html);
+        $this->assertStringContainsString('بلیط برگشت', $html);
+        $this->assertStringContainsString('فرودگاه بین‌المللی مهرآباد', $html);
+        $this->assertStringContainsString('هواپیمایی یزد', $html);
+        $this->assertStringContainsString('BAe 146', $html);
+        $this->assertStringContainsString('2026-11-29', $html);
+        $this->assertStringContainsString('قوانین بار', $html);
+        $this->assertStringContainsString('قوانین کنسلی', $html);
+        $this->assertStringContainsString('قوانین و مقررات', $html);
+        $this->assertStringContainsString('نکات پرواز', $html);
+        $this->assertStringContainsString('۱۲٬۶۲۸٬۰۰۰ تومان', $html);
+        $this->assertStringContainsString('۱۲۶٬۲۸۰٬۰۰۰ ریال', $html);
+        $this->assertStringContainsString('۳۰٪', $html);
+        $this->assertStringNotContainsString('FH-HIDDEN-1', $html);
+        $this->assertStringNotContainsString('SUP-HIDDEN-1', $html);
+    }
+
     public function test_show_abs_reservation_templates_hide_supplier_codes(): void
     {
         $renderer = $this->app->make(TemplateRenderService::class);

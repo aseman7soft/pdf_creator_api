@@ -125,6 +125,12 @@ final class TravelDocumentCatalog
             ['name' => 'cancellation_policies', 'label' => 'سیاست کنسلی', 'type' => 'array', 'is_required' => false, 'description' => 'card.cancellationPolicies[]: {description, adultPenaltyPercentage, childPenaltyPercentage, infantPenaltyPercentage}', 'sort_order' => 35],
             ['name' => 'notes', 'label' => 'توضیحات', 'type' => 'text', 'is_required' => false, 'validation_rules' => 'max:2000', 'sort_order' => 36],
             ['name' => 'agency_name', 'label' => 'نام آژانس', 'type' => 'string', 'is_required' => false, 'default_value' => 'آژانس مسافرتی آسمان هفتم', 'validation_rules' => 'max:120', 'sort_order' => 37],
+            ['name' => 'airline_pnr', 'label' => 'PNR ایرلاین', 'type' => 'string', 'is_required' => false, 'description' => 'PNR ایرلاین در صورت وجود؛ وگرنه pnr چاپ می‌شود.', 'validation_rules' => 'max:40', 'sort_order' => 38],
+            ['name' => 'issued_time', 'label' => 'ساعت صدور', 'type' => 'string', 'is_required' => false, 'description' => 'H:i به وقت تهران', 'validation_rules' => 'max:10', 'sort_order' => 39],
+            ['name' => 'baggage_rules', 'label' => 'قوانین بار', 'type' => 'array', 'is_required' => false, 'description' => 'رشته یا {label, value}. در کادر جداگانهٔ «قوانین بار» به‌صورت فهرست شماره‌دار.', 'sort_order' => 40],
+            ['name' => 'cancellation_rules', 'label' => 'قوانین کنسلی', 'type' => 'array', 'is_required' => false, 'description' => 'رشته یا {label, value}. اگر cancellation_policies باشد، جدول آن نمایش داده می‌شود.', 'sort_order' => 41],
+            ['name' => 'general_rules', 'label' => 'قوانین و مقررات', 'type' => 'array', 'is_required' => false, 'description' => 'رشته یا {label, value}. اولویت بر rules.', 'sort_order' => 42],
+            ['name' => 'flight_notes', 'label' => 'نکات پرواز', 'type' => 'array', 'is_required' => false, 'description' => 'رشته‌ها. اگر خالی باشد نکات پیش‌فرض چاپ می‌شود.', 'sort_order' => 43],
         ];
     }
 
