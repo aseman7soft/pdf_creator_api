@@ -58,8 +58,11 @@
         .note, .rules { border-radius: 10px; padding: 8px 12px; font-size: 11px; margin-top: 8px; page-break-inside: avoid; }
         .money { page-break-inside: avoid; }
         .note { background: #fff8eb; border: 1px dashed #e0b15a; }
-        .rules { background: #f7f9fc; border: 1px solid #e3e8ef; }
-        .rules li { margin: 0 16px 2px 0; }
+        .rules { background: #f7f9fc; border: 1px solid #e3e8ef; color: #1b2430; line-height: 1.85; text-align: justify; }
+        .rules strong { display: block; margin-bottom: 6px; color: #12356b; font-size: 12px; }
+        .rules ul { margin: 0; padding: 0 18px 0 0; }
+        .rules li { margin: 0 0 6px; color: #1b2430; }
+        .rules--contract { background: #fff; border-color: #c5d0de; }
         .foot-note { margin-top: 12px; font-size: 10px; color: #5e6b7a; }
         .empty { color: #5e6b7a; font-size: 11px; }
     </style>
@@ -296,15 +299,35 @@
         <p>{{ contact_name ?? '' }} <span class="ltr">{{ contact_phone ?? '' }}</span> <span class="ltr">{{ contact_email ?? '' }}</span></p>
         @endif
 
-        @if(count(rules ?? []) > 0 || count(cancellation_policies ?? []) > 0)
+        @if(count(baggage_rules ?? []) > 0)
         <div class="rules">
-            <strong>قوانین نرخ و کنسلی</strong>
+            <strong>قوانین بار</strong>
             <ul>
-                @foreach(rules ?? [] as $rule)
-                <li>@if(rule.label){{ rule.label }}: {{ rule.value ?? rule.text ?? rule.description }}@else{{ rule }}@endif</li>
+                @foreach(baggage_rules as $rule)
+                <li>{{ rule }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+        @if(count(cancellation_rules ?? []) > 0 || count(cancellation_policies ?? []) > 0)
+        <div class="rules">
+            <strong>قوانین کنسلی</strong>
+            <ul>
+                @foreach(cancellation_rules ?? [] as $rule)
+                <li>{{ rule }}</li>
                 @endforeach
                 @foreach(cancellation_policies ?? [] as $policy)
                 <li>{{ policy.description ?? policy }}@if(policy.adultPenaltyPercentage != null) — جریمه بزرگسال {{ policy.adultPenaltyPercentage | digits }}٪@endif</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+        @if(count(general_rules ?? rules ?? []) > 0)
+        <div class="rules rules--contract">
+            <strong>{{ contract_amendment_title ?? 'قوانین و مقررات' }}</strong>
+            <ul>
+                @foreach(general_rules ?? rules ?? [] as $rule)
+                <li>@if(rule.label){{ rule.label }}: {{ rule.value ?? rule.text ?? rule.description }}@else{{ rule }}@endif</li>
                 @endforeach
             </ul>
         </div>

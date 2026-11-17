@@ -49,7 +49,11 @@
         .keep { page-break-inside: avoid; }
         .note, .rules { border-radius: 10px; padding: 8px 12px; font-size: 11px; margin-top: 8px; page-break-inside: avoid; }
         .note { background: #fff8eb; border: 1px dashed #e0b15a; }
-        .rules { background: #f7f9fc; border: 1px solid #e3e8ef; }
+        .rules { background: #f7f9fc; border: 1px solid #e3e8ef; color: #1b2430; line-height: 1.85; text-align: justify; }
+        .rules strong { display: block; margin-bottom: 6px; color: #12356b; font-size: 12px; }
+        .rules ul { margin: 0; padding: 0 18px 0 0; }
+        .rules li { margin: 0 0 6px; color: #1b2430; }
+        .rules--contract { background: #fff; border-color: #c5d0de; page-break-before: auto; }
     </style>
 </head>
 <body>
@@ -211,7 +215,20 @@
     @if(guide_name ?? guide_phone)
     <div class="card" style="margin-top:8px;"><span class="lbl">راهنما / لیدر</span>{{ guide_name ?? '' }} <span class="ltr">{{ guide_phone ?? '' }}</span></div>
     @endif
-    @if(count(rules ?? []) > 0)<div class="rules"><strong>قوانین</strong><ul>@foreach($rules as $rule)<li>{{ rule }}</li>@endforeach</ul></div>@endif
+    @if(count(baggage_rules ?? []) > 0)
+    <div class="rules"><strong>قوانین بار</strong><ul>@foreach(baggage_rules as $rule)<li>{{ rule }}</li>@endforeach</ul></div>
+    @endif
+    @if(count(cancellation_rules ?? []) > 0 || count(cancellation_policies ?? []) > 0)
+    <div class="rules"><strong>قوانین کنسلی</strong><ul>
+        @foreach(cancellation_rules ?? [] as $rule)<li>{{ rule }}</li>@endforeach
+        @foreach(cancellation_policies ?? [] as $policy)
+            @if(policy.description ?? null)<li>{{ policy.description }}</li>@endif
+        @endforeach
+    </ul></div>
+    @endif
+    @if(count(general_rules ?? rules ?? []) > 0)
+    <div class="rules rules--contract"><strong>{{ contract_amendment_title ?? 'قوانین و مقررات' }}</strong><ul>@foreach(general_rules ?? rules ?? [] as $rule)<li>{{ rule }}</li>@endforeach</ul></div>
+    @endif
     @if(notes)<div class="note">{{ notes }}</div>@endif
 </div>
 </body>
